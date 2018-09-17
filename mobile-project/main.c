@@ -34,22 +34,13 @@
 
 #include <stdio.h>
 #include "retargetserial.h"
+#include "sleep.h"
 
 #if defined(HAL_CONFIG)
 #include "bsphalconfig.h"
 #else
 #include "bspconfig.h"
 #endif
-
-/***********************************************************************************************//**
- * @addtogroup Application
- * @{
- **************************************************************************************************/
-
-/***********************************************************************************************//**
- * @addtogroup app
- * @{
- **************************************************************************************************/
 
 #ifndef MAX_CONNECTIONS
 #define MAX_CONNECTIONS 4
@@ -63,105 +54,271 @@ static const gecko_configuration_t config = {
   .bluetooth.max_connections = MAX_CONNECTIONS,
   .bluetooth.heap = bluetooth_stack_heap,
   .bluetooth.heap_size = sizeof(bluetooth_stack_heap),
-  .bluetooth.sleep_clock_accuracy = 100, // ppm
+  .bluetooth.sleep_clock_accuracy = 100,
   .gattdb = &bg_gattdb_data,
   .ota.flags = 0,
   .ota.device_name_len = 3,
   .ota.device_name_ptr = "OTA",
 #if (HAL_PA_ENABLE) && defined(FEATURE_PA_HIGH_POWER)
-  .pa.config_enable = 1, // Enable high power PA
-  .pa.input = GECKO_RADIO_PA_INPUT_VBAT, // Configure PA input to VBAT
-#endif // (HAL_PA_ENABLE) && defined(FEATURE_PA_HIGH_POWER)
+  .pa.config_enable = 1,
+  .pa.input = GECKO_RADIO_PA_INPUT_VBAT,
+#endif
 };
 
-// Flag for indicating DFU Reset must be performed
-uint8_t boot_to_dfu = 0;
+/***************************************************************************************************
+  Local Macros and Definitions
+ **************************************************************************************************/
+#define DISCONNECTED	0
+#define SCANNING		1
+#define FIND_SERVICE	2
+#define FIND_CHAR		3
+#define ENABLE_NOTIF 	4
+#define DATA_MODE		5
+
+// SPP service UUID: 2df1425f-32ca-4e67-aad2-3176631e6559
+const uint8 serviceUUID[16] = {0x59, 0x65, 0x1e, 0x63, 0x76, 0x31, 0xd2, 0xaa, 0x67, 0x4e, 0xca, 0x32, 0x5f, 0x42, 0xf1, 0x2d};
+
+// SPP data UUID: dde0c840-7bc7-4a70-9c69-3295c2535cd9
+const uint8 charUUID[16] = {0xd9, 0x5c, 0x53, 0xc2, 0x95, 0x32, 0x69, 0x9c, 0x70, 0x4a, 0xc7, 0x7b, 0x40, 0xc8, 0xe0, 0xdd};
+
+#define RESTART_TIMER 1
+#define SPP_TX_TIMER  2
+
+/***************************************************************************************************
+ Local Variables
+ **************************************************************************************************/
+static uint8 _conn_handle = 0xFF;
+static int _main_state;
+static uint32 _service_handle;
+static uint16 _char_handle;
+
+static void reset_variables() {
+	_conn_handle = 0xFF;
+	_main_state = DISCONNECTED;
+	_service_handle = 0;
+	_char_handle = 0;
+}
+
+static int process_scan_response(struct gecko_msg_le_gap_scan_response_evt_t *pResp) {
+    int i = 0;
+    int ad_match_found = 0;
+	int ad_len;
+    int ad_type;
+
+    char name[32];
+
+    while (i < (pResp->data.len - 1)) {
+
+        ad_len  = pResp->data.data[i];
+        ad_type = pResp->data.data[i+1];
+
+        // Name Provided
+        if (ad_type == 0x08 || ad_type == 0x09 ) {
+            memcpy(name, &(pResp->data.data[i+2]), ad_len-1);
+            name[ad_len-1] = 0;
+            printf(name);
+            printf("\r\n");
+        }
+
+        // Address Provided
+        if (ad_type == 0x06 || ad_type == 0x07) {
+        	if(memcmp(serviceUUID, &(pResp->data.data[i+2]),16) == 0) {
+        		printf("Found SPP device\r\n");
+        		ad_match_found = 1;
+        	}
+        }
+
+        i = i + ad_len + 1;
+    }
+    return(ad_match_found);
+}
+
+static void send_spp_data() {
+	uint8 len = 0;
+	uint8 data[20];
+	uint16 result;
+	int c;
+
+	while(len < 20) {
+		  c = RETARGET_ReadChar();
+
+		  if(c < 0)
+		  {
+			  break;
+		  }
+		  else
+		  {
+			  data[len++] = (uint8)c;
+		  }
+	}
+
+	if(len > 0) {
+		// stack may return "out-of-memory" error if the local buffer is full -> in that case, just keep trying until the command succeeds
+		do {
+			result = gecko_cmd_gatt_write_characteristic_value_without_response(_conn_handle, _char_handle, len, data)->result;
+		}
+		while(result == bg_err_out_of_memory);
+		if(result != 0) {
+			printf("WTF: %x\r\n", result);
+		}
+	}
+}
 
 /**
- * @brief  Main function
+ * @brief  SPP client mode main loop
  */
-void main(void)
-{
-  // Initialize device
-  initMcu();
-  // Initialize board
-  initBoard();
-  // Initialize application
-  initApp();
+void main(void) {
+	// Initialize device
+	initMcu();
+	// Initialize board
+	initBoard();
+	// Initialize application
+	initApp();
+	// Initialize stack
+	gecko_init(&config);
 
-  // Initialize stack
-  gecko_init(&config);
-
-  RETARGET_SerialInit();
-
-  uint8_t tmp[] = "updatedVal";
-  gecko_cmd_gatt_server_write_attribute_value(22,0,strlen(tmp),tmp);
+	RETARGET_SerialInit();
+	char printbuf[128];
 
   while (1) {
-
-	  printf("Testing Terminal");
     /* Event pointer for handling events */
     struct gecko_cmd_packet* evt;
-
     /* Check for stack event. */
     evt = gecko_wait_event();
 
     /* Handle events */
     switch (BGLIB_MSG_ID(evt->header)) {
-      /* This boot event is generated when the system boots up after reset.
-       * Do not call any stack commands before receiving the boot event.
-       * Here the system is set to start advertising immediately after boot procedure. */
-      case gecko_evt_system_boot_id:
 
-        /* Set advertising parameters. 100ms advertisement interval.
-         * The first parameter is advertising set handle
-         * The next two parameters are minimum and maximum advertising interval, both in
-         * units of (milliseconds * 1.6).
-         * The last two parameters are duration and maxevents left as default. */
-        gecko_cmd_le_gap_set_advertise_timing(0, 160, 160, 0, 0);
+    	/* This boot event is generated when the system boots up after reset.
+    	 * Here the system is set to start advertising immediately after boot procedure. */
+    	case gecko_evt_system_boot_id:
+    		reset_variables();
 
-        /* Start general advertising and enable connections. */
-        gecko_cmd_le_gap_start_advertising(0, le_gap_general_discoverable, le_gap_connectable_scannable);
-        break;
+    		// start discovery
+    		gecko_cmd_le_gap_discover(le_gap_discover_generic);
+    		break;
 
-      case gecko_evt_le_connection_closed_id:
+    	case gecko_evt_le_gap_scan_response_id:
+			// process scan responses: this function returns 1 if we found the service we are looking for
+			if(process_scan_response(&(evt->data.evt_le_gap_scan_response)) > 0) {
+				struct gecko_msg_le_gap_open_rsp_t *pResp;
 
-        /* Check if need to boot to dfu mode */
-        if (boot_to_dfu) {
-          /* Enter to DFU OTA mode */
-          gecko_cmd_system_reset(2);
-        } else {
-          /* Restart advertising after client has disconnected */
-          gecko_cmd_le_gap_start_advertising(0, le_gap_general_discoverable, le_gap_connectable_scannable);
-        }
-        break;
+				// match found -> stop discovery and try to connect
+				gecko_cmd_le_gap_end_procedure();
 
-      /* Events related to OTA upgrading
-         ----------------------------------------------------------------------------- */
+				pResp = gecko_cmd_le_gap_open(evt->data.evt_le_gap_scan_response.address, evt->data.evt_le_gap_scan_response.address_type);
 
-      /* Check if the user-type OTA Control Characteristic was written.
-       * If ota_control was written, boot the device into Device Firmware Upgrade (DFU) mode. */
-      case gecko_evt_gatt_server_user_write_request_id:
+				// make copy of connection handle for later use (for example, to cancel the connection attempt)
+				_conn_handle = pResp->connection;
 
-        if (evt->data.evt_gatt_server_user_write_request.characteristic == gattdb_ota_control) {
-          /* Set flag to enter to OTA mode */
-          boot_to_dfu = 1;
-          /* Send response to Write Request */
-          gecko_cmd_gatt_server_send_user_write_response(
-            evt->data.evt_gatt_server_user_write_request.connection,
-            gattdb_ota_control,
-            bg_err_success);
+			}
+			break;
 
-          /* Close connection to enter to DFU OTA mode */
-          gecko_cmd_le_connection_close(evt->data.evt_gatt_server_user_write_request.connection);
-        }
-        break;
+    	/* Connection opened event */
+		case gecko_evt_le_connection_opened_id:
+			printf("CONNECTED!\r\n");
 
-      default:
-        break;
-    }
-  }
+			// start service discovery (we are only interested in one UUID)
+			gecko_cmd_gatt_discover_primary_services_by_uuid(_conn_handle, 16, serviceUUID);
+			_main_state = FIND_SERVICE;
+
+			break;
+
+		case gecko_evt_le_connection_closed_id:
+			printf("DISCONNECTED!\r\n");
+
+			reset_variables();
+			// stop TX timer:
+			gecko_cmd_hardware_set_soft_timer(0, SPP_TX_TIMER, 0);
+
+			SLEEP_SleepBlockEnd(sleepEM2); // enable sleeping after disconnect
+
+			// create one-shot soft timer that will restart discovery after 1 second delay
+			gecko_cmd_hardware_set_soft_timer(32768, RESTART_TIMER, true);
+			break;
+
+		case gecko_evt_le_connection_parameters_id:
+			printf("Conn.parameters: interval %u units, txsize %u\r\n",
+			evt->data.evt_le_connection_parameters.interval,
+			evt->data.evt_le_connection_parameters.txsize);
+			break;
+
+		case gecko_evt_gatt_service_id:
+			if(evt->data.evt_gatt_service.uuid.len == 16) {
+				if(memcmp(serviceUUID, evt->data.evt_gatt_service.uuid.data,16) == 0) {
+					printf("Service Discovered\r\n");
+					_service_handle = evt->data.evt_gatt_service.service;
+				}
+			}
+			break;
+
+		case gecko_evt_gatt_procedure_completed_id:
+			switch(_main_state) {
+				case FIND_SERVICE:
+					if (_service_handle > 0) {
+						// Service found, next search for characteristics
+						gecko_cmd_gatt_discover_characteristics(_conn_handle, _service_handle);
+						_main_state = FIND_CHAR;
+					} else {
+						// No service found -> disconnect
+						printf("SPP service not found?\r\n");
+						gecko_cmd_endpoint_close(_conn_handle);
+					}
+					break;
+
+				case FIND_CHAR:
+					if (_char_handle > 0) {
+						// Char found, turn on indications
+						gecko_cmd_gatt_set_characteristic_notification(_conn_handle, _char_handle, gatt_notification);
+						_main_state = ENABLE_NOTIF;
+					} else {
+						// No characteristic found -> disconnect
+						printf("SPP char not found?\r\n");
+						gecko_cmd_endpoint_close(_conn_handle);
+					}
+					break;
+
+				case ENABLE_NOTIF:
+					_main_state = DATA_MODE;
+					printf("SPP mode ON\r\n");
+					// start soft timer that is used to offload local TX buffer
+					gecko_cmd_hardware_set_soft_timer(328, SPP_TX_TIMER, 0);
+					SLEEP_SleepBlockBegin(sleepEM2); // disable sleeping when SPP mode active
+					break;
+
+				default:
+					break;
+			}
+			break;
+
+    	case gecko_evt_gatt_characteristic_id:
+    		if(evt->data.evt_gatt_characteristic.uuid.len == 16) {
+    			if(memcmp(charUUID, evt->data.evt_gatt_characteristic.uuid.data,16) == 0) {
+    				printf("Char discovered");
+    				_char_handle = evt->data.evt_gatt_characteristic.characteristic;
+    			}
+    		}
+    		break;
+
+    	/* Software Timer event */
+    	case gecko_evt_hardware_soft_timer_id:
+    		switch (evt->data.evt_hardware_soft_timer.handle) {
+				case SPP_TX_TIMER:
+					// send data from local TX buffer
+					send_spp_data();
+					break;
+
+				case RESTART_TIMER:
+					gecko_cmd_le_gap_discover(le_gap_discover_generic);
+					break;
+
+				default:
+					break;
+    		}
+    		break;
+
+    	default:
+    		break;
+    	}
+  	}
 }
-
-/** @} (end addtogroup app) */
-/** @} (end addtogroup Application) */

@@ -1,83 +1,84 @@
 main.o: ../main.c ../init_mcu.h ../init_board.h ../init_app.h \
  ../ble-configuration.h ../board_features.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\protocol\bluetooth\ble_stack\inc\common/bg_types.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\protocol\bluetooth\ble_stack\inc\soc/native_gecko.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty/hal-config.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty/board_features.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\hardware\kit\EFR32MG12_BRD4166A\config/hal-config-board.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/em_device.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p332f1024gl125.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\CMSIS\Include/core_cm4.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\CMSIS\Include/cmsis_version.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\CMSIS\Include/cmsis_compiler.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\CMSIS\Include/cmsis_gcc.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\CMSIS\Include/mpu_armv7.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/system_efr32mg12p.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_msc.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_emu.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_rmu.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_cmu.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_crypto.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_gpio_p.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_gpio.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_prs_ch.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_prs.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_ldma_ch.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_ldma.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_fpueh.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_gpcrc.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_timer_cc.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_timer.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_usart.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_leuart.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_letimer.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_cryotimer.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_pcnt.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_i2c.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_adc.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_acmp.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_idac.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_vdac_opa.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_vdac.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_csen.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_lesense_st.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_lesense_buf.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_lesense_ch.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_lesense.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_rtcc_cc.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_rtcc_ret.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_rtcc.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_wdog_pch.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_wdog.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_etm.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_smu.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_trng.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_dma_descriptor.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_devinfo.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_romtable.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_prs_signals.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_dmareq.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_af_ports.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_af_pins.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\halconfig\inc\hal-config/hal-config-types.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\emlib\inc/em_gpio.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\emlib\inc/em_bus.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\emlib\inc/em_assert.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty/hal-config-app-common.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\protocol\bluetooth\ble_stack\inc\common/gecko_configuration.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\protocol\bluetooth\ble_stack\inc\common/bg_gattdb_def.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\protocol\bluetooth\ble_stack\inc\common/bg_types.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\protocol\bluetooth\ble_stack\inc\common/bg_errorcodes.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\protocol\bluetooth\ble_stack\inc\common/bg_types.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\protocol\bluetooth\ble_stack\inc\soc/native_gecko.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project/hal-config.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project/board_features.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\hardware\kit\EFR32MG12_BRD4166A\config/hal-config-board.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/em_device.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p332f1024gl125.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\CMSIS\Include/core_cm4.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\CMSIS\Include/cmsis_version.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\CMSIS\Include/cmsis_compiler.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\CMSIS\Include/cmsis_gcc.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\CMSIS\Include/mpu_armv7.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/system_efr32mg12p.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_msc.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_emu.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_rmu.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_cmu.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_crypto.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_gpio_p.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_gpio.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_prs_ch.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_prs.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_ldma_ch.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_ldma.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_fpueh.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_gpcrc.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_timer_cc.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_timer.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_usart.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_leuart.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_letimer.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_cryotimer.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_pcnt.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_i2c.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_adc.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_acmp.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_idac.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_vdac_opa.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_vdac.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_csen.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_lesense_st.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_lesense_buf.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_lesense_ch.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_lesense.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_rtcc_cc.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_rtcc_ret.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_rtcc.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_wdog_pch.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_wdog.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_etm.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_smu.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_trng.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_dma_descriptor.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_devinfo.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_romtable.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_prs_signals.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_dmareq.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_af_ports.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_af_pins.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\halconfig\inc\hal-config/hal-config-types.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emlib\inc/em_gpio.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emlib\inc/em_bus.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emlib\inc/em_assert.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project/hal-config-app-common.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\protocol\bluetooth\ble_stack\inc\common/gecko_configuration.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\protocol\bluetooth\ble_stack\inc\common/bg_gattdb_def.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\protocol\bluetooth\ble_stack\inc\common/bg_types.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\protocol\bluetooth\ble_stack\inc\common/bg_errorcodes.h \
  ../gatt_db.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\protocol\bluetooth\ble_stack\inc\common/bg_gattdb_def.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\emlib\inc/em_emu.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\emlib\inc/em_cmu.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\emlib\inc/em_gpio.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\protocol\bluetooth\ble_stack\inc\common/bg_gattdb_def.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emlib\inc/em_emu.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emlib\inc/em_cmu.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emlib\inc/em_gpio.h \
  ../hal-config.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\hardware\kit\common\drivers/retargetserial.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\hardware\kit\common\halconfig/retargetserialhalconfig.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\hardware\kit\common\halconfig/bsphalconfig.h \
- C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\hardware\kit\common\bsp/bsp_bcp.h
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\hardware\kit\common\drivers/retargetserial.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\hardware\kit\common\halconfig/retargetserialhalconfig.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emdrv\sleep\inc/sleep.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\hardware\kit\common\halconfig/bsphalconfig.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\hardware\kit\common\bsp/bsp_bcp.h
 
 ../init_mcu.h:
 
@@ -89,158 +90,160 @@ main.o: ../main.c ../init_mcu.h ../init_board.h ../init_app.h \
 
 ../board_features.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\protocol\bluetooth\ble_stack\inc\common/bg_types.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\protocol\bluetooth\ble_stack\inc\common/bg_types.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\protocol\bluetooth\ble_stack\inc\soc/native_gecko.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\protocol\bluetooth\ble_stack\inc\soc/native_gecko.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty/hal-config.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project/hal-config.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty/board_features.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project/board_features.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\hardware\kit\EFR32MG12_BRD4166A\config/hal-config-board.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\hardware\kit\EFR32MG12_BRD4166A\config/hal-config-board.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/em_device.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/em_device.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p332f1024gl125.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p332f1024gl125.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\CMSIS\Include/core_cm4.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\CMSIS\Include/core_cm4.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\CMSIS\Include/cmsis_version.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\CMSIS\Include/cmsis_version.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\CMSIS\Include/cmsis_compiler.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\CMSIS\Include/cmsis_compiler.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\CMSIS\Include/cmsis_gcc.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\CMSIS\Include/cmsis_gcc.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\CMSIS\Include/mpu_armv7.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\CMSIS\Include/mpu_armv7.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/system_efr32mg12p.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/system_efr32mg12p.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_msc.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_msc.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_emu.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_emu.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_rmu.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_rmu.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_cmu.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_cmu.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_crypto.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_crypto.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_gpio_p.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_gpio_p.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_gpio.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_gpio.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_prs_ch.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_prs_ch.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_prs.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_prs.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_ldma_ch.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_ldma_ch.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_ldma.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_ldma.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_fpueh.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_fpueh.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_gpcrc.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_gpcrc.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_timer_cc.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_timer_cc.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_timer.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_timer.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_usart.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_usart.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_leuart.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_leuart.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_letimer.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_letimer.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_cryotimer.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_cryotimer.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_pcnt.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_pcnt.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_i2c.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_i2c.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_adc.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_adc.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_acmp.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_acmp.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_idac.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_idac.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_vdac_opa.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_vdac_opa.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_vdac.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_vdac.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_csen.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_csen.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_lesense_st.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_lesense_st.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_lesense_buf.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_lesense_buf.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_lesense_ch.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_lesense_ch.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_lesense.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_lesense.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_rtcc_cc.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_rtcc_cc.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_rtcc_ret.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_rtcc_ret.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_rtcc.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_rtcc.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_wdog_pch.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_wdog_pch.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_wdog.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_wdog.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_etm.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_etm.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_smu.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_smu.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_trng.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_trng.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_dma_descriptor.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_dma_descriptor.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_devinfo.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_devinfo.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_romtable.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_romtable.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_prs_signals.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_prs_signals.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_dmareq.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_dmareq.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_af_ports.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_af_ports.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_af_pins.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\Device\SiliconLabs\EFR32MG12P\Include/efr32mg12p_af_pins.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\halconfig\inc\hal-config/hal-config-types.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\halconfig\inc\hal-config/hal-config-types.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\emlib\inc/em_gpio.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emlib\inc/em_gpio.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\emlib\inc/em_bus.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emlib\inc/em_bus.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\emlib\inc/em_assert.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emlib\inc/em_assert.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty/hal-config-app-common.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project/hal-config-app-common.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\protocol\bluetooth\ble_stack\inc\common/gecko_configuration.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\protocol\bluetooth\ble_stack\inc\common/gecko_configuration.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\protocol\bluetooth\ble_stack\inc\common/bg_gattdb_def.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\protocol\bluetooth\ble_stack\inc\common/bg_gattdb_def.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\protocol\bluetooth\ble_stack\inc\common/bg_types.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\protocol\bluetooth\ble_stack\inc\common/bg_types.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\protocol\bluetooth\ble_stack\inc\common/bg_errorcodes.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\protocol\bluetooth\ble_stack\inc\common/bg_errorcodes.h:
 
 ../gatt_db.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\protocol\bluetooth\ble_stack\inc\common/bg_gattdb_def.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\protocol\bluetooth\ble_stack\inc\common/bg_gattdb_def.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\emlib\inc/em_emu.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emlib\inc/em_emu.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\emlib\inc/em_cmu.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emlib\inc/em_cmu.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\platform\emlib\inc/em_gpio.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emlib\inc/em_gpio.h:
 
 ../hal-config.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\hardware\kit\common\drivers/retargetserial.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\hardware\kit\common\drivers/retargetserial.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\hardware\kit\common\halconfig/retargetserialhalconfig.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\hardware\kit\common\halconfig/retargetserialhalconfig.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\hardware\kit\common\halconfig/bsphalconfig.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emdrv\sleep\inc/sleep.h:
 
-C:\Users\WindowsUser\SimplicityStudio\v4_workspace\soc-empty\hardware\kit\common\bsp/bsp_bcp.h:
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\hardware\kit\common\halconfig/bsphalconfig.h:
+
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\hardware\kit\common\bsp/bsp_bcp.h:

@@ -7,6 +7,6 @@ Standard output
 ALL OK
 
 Error/Warning output
-WARNING: dde0c8407bc74a709c693295c2535cd9 length attribute is 10 but actual value length is 12. 10 will be used.
+WARNING: dde0c8407bc74a709c693295c2535cd9 max length attribute is 20 but actual value length is 12. 20 will be used.
 
 

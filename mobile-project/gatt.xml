@@ -65,8 +65,8 @@
     <!--Test Characteristic-->
     <characteristic id="test_characteristic" name="Test Characteristic" sourceId="custom.type" uuid="dde0c840-7bc7-4a70-9c69-3295c2535cd9">
       <informativeText>Custom characteristic</informativeText>
-      <value length="10" type="utf-8" variable_length="false">initialValue</value>
-      <properties read="true" read_requirement="optional" write="true" write_requirement="optional"/>
+      <value length="20" type="utf-8" variable_length="true">initialValue</value>
+      <properties notify="true" notify_requirement="optional" write_no_response="true" write_no_response_requirement="optional"/>
     </characteristic>
   </service>
 </gatt>
