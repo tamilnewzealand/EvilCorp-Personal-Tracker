@@ -7,3 +7,6 @@
 *.m51
 *.omf
 *.bak
+
+/.metadata
+/outgoing

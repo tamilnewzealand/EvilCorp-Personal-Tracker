@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Rename resource &apos;soc-empty&apos; to &apos;mobile-project&apos;" description="Rename resource &apos;soc-empty&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="/soc-empty" name="mobile-project" stamp="1537217654709" updateReferences="true"/>
-</session>
