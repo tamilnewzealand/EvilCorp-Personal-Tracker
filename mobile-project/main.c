@@ -91,6 +91,7 @@ static uint8 _conn_handle = 0xFF;
 static int _main_state;
 static uint32 _service_handle;
 static uint16 _char_handle;
+static uint8 associated;
 
 static void reset_variables() {
 	_conn_handle = 0xFF;
@@ -179,6 +180,7 @@ void main(void) {
 
 	RETARGET_SerialInit();
 	char printbuf[128];
+	associated = 0;
 
   while (1) {
     /* Event pointer for handling events */
@@ -199,19 +201,23 @@ void main(void) {
     		break;
 
     	case gecko_evt_le_gap_scan_response_id:
+    		printf("BD_ADDR = %02x: %02x: %02x: %02x: %02x: %02x, RSSI: %d \n", (uint8)(evt->data.evt_le_gap_scan_response.address.addr[0]),(uint8)(evt->data.evt_le_gap_scan_response.address.addr[1]),(uint8)(evt->data.evt_le_gap_scan_response.address.addr[2]),(uint8)(evt->data.evt_le_gap_scan_response.address.addr[3]),(uint8)(evt->data.evt_le_gap_scan_response.address.addr[4]),(uint8)(evt->data.evt_le_gap_scan_response.address.addr[5]), (int8)evt->data.evt_le_gap_scan_response.rssi);
 			// process scan responses: this function returns 1 if we found the service we are looking for
-			if(process_scan_response(&(evt->data.evt_le_gap_scan_response)) > 0) {
-				struct gecko_msg_le_gap_open_rsp_t *pResp;
+    		if (associated == 0) {
+				if(process_scan_response(&(evt->data.evt_le_gap_scan_response)) > 0) {
+					struct gecko_msg_le_gap_open_rsp_t *pResp;
 
-				// match found -> stop discovery and try to connect
-				gecko_cmd_le_gap_end_procedure();
+					// match found -> stop discovery and try to connect
+					//gecko_cmd_le_gap_end_procedure();
+					associated = 1;
 
-				pResp = gecko_cmd_le_gap_open(evt->data.evt_le_gap_scan_response.address, evt->data.evt_le_gap_scan_response.address_type);
+					pResp = gecko_cmd_le_gap_open(evt->data.evt_le_gap_scan_response.address, evt->data.evt_le_gap_scan_response.address_type);
 
-				// make copy of connection handle for later use (for example, to cancel the connection attempt)
-				_conn_handle = pResp->connection;
+					// make copy of connection handle for later use (for example, to cancel the connection attempt)
+					_conn_handle = pResp->connection;
 
-			}
+				}
+    		}
 			break;
 
     	/* Connection opened event */
