@@ -73,6 +73,7 @@ main.o: ../main.c ../init_mcu.h ../init_board.h ../init_app.h \
  C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emlib\inc/em_emu.h \
  C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emlib\inc/em_cmu.h \
  C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emlib\inc/em_gpio.h \
+ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emlib\inc/em_i2c.h \
  ../hal-config.h \
  C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\hardware\kit\common\drivers/retargetserial.h \
  C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\hardware\kit\common\halconfig/retargetserialhalconfig.h \
@@ -235,6 +236,8 @@ C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-proj
 C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emlib\inc/em_cmu.h:
 
 C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emlib\inc/em_gpio.h:
+
+C:\Users\mark_\Documents\COMPSYS_704\Part2\EvilCorp_Personal_Tracker\mobile-project\platform\emlib\inc/em_i2c.h:
 
 ../hal-config.h:
 

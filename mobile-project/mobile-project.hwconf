@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ASCII"?>
+<device:XMLDevice xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:device="http://www.silabs.com/ss/hwconfig/document/device.ecore" name="EFR32MG12P332F1024GL125" partId="mcu.arm.efr32.mg12.efr32mg12p332f1024gl125" contextId="com.silabs.sdk.stack.super:2.4.0._310455068">
+  <mode name="DefaultMode">
+    <property object="DefaultMode" propertyId="mode.diagramLocation" value="100, 100"/>
+    <property object="I2C0" propertyId="ABPeripheral.included" value="true"/>
+    <property object="I2C0" propertyId="I2C.BSP_I2C_SCL.PIN" value="PC11"/>
+    <property object="I2C0" propertyId="I2C.BSP_I2C_SDA.PIN" value="PC10"/>
+    <property object="I2C0" propertyId="I2C.HAL_I2C_INIT_ENABLE.BOOL" value="1"/>
+    <property object="PC7" propertyId="ports.settings.custompinname" value=""/>
+    <property object="PORTIO" propertyId="portio.i2c0.enable.scl" value="Enabled"/>
+    <property object="PORTIO" propertyId="portio.i2c0.enable.sda" value="Enabled"/>
+    <property object="PORTIO" propertyId="portio.i2c0.location.i2c0_sclloc" value="15"/>
+    <property object="PORTIO" propertyId="portio.i2c0.location.i2c0_sdaloc" value="15"/>
+  </mode>
+  <modeTransition>
+    <property object="RESET &#x2192; DefaultMode" propertyId="modeTransition.source" value="RESET"/>
+    <property object="RESET &#x2192; DefaultMode" propertyId="modeTransition.target" value="DefaultMode"/>
+  </modeTransition>
+</device:XMLDevice>
