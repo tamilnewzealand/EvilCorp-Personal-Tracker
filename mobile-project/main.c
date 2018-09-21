@@ -96,6 +96,7 @@ static uint8 _conn_handle = 0xFF;
 static int _main_state;
 static uint32 _service_handle;
 static uint16 _char_handle;
+static uint8 associated;
 
 static void reset_variables() {
 	_conn_handle = 0xFF;
@@ -230,6 +231,7 @@ void main(void) {
 
 	RETARGET_SerialInit();
 	char printbuf[128];
+	associated = 0;
 
 	uint16_t res = 0;
 	bool result = false;
@@ -258,7 +260,6 @@ void main(void) {
 
 		/* Handle events */
 		switch (BGLIB_MSG_ID(evt->header)) {
-
 			/* This boot event is generated when the system boots up after reset.
 			 * Here the system is set to start advertising immediately after boot procedure. */
 			case gecko_evt_system_boot_id:
@@ -277,6 +278,7 @@ void main(void) {
 					gecko_cmd_le_gap_end_procedure();
 
 					pResp = gecko_cmd_le_gap_open(evt->data.evt_le_gap_scan_response.address, evt->data.evt_le_gap_scan_response.address_type);
+
 
 					// make copy of connection handle for later use (for example, to cancel the connection attempt)
 					_conn_handle = pResp->connection;
