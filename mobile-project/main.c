@@ -156,23 +156,26 @@ int main(void) {
 	RETARGET_SerialInit();
 	associated = 0;
 
-	uint16_t res = 0;
-	bool result = false;
-
-	// Read Status and WHO AM I from Accelerometer/Magnetometer
-	result = i2c_read_register(0x1E, 0x00, &res);
-	printf("accelerometer status value: %d\r\n", res);
-	result = i2c_read_register(0x1E, 0x0D, &res);
-	printf("accelerometer WHO AM I value: %d\r\n", res);
-
-	// Read Status and WHO AM I from Gyroscope
-	result = i2c_read_register(0x20, 0x00, &res);
-	printf("gyroscope status value: %d\r\n", res);
-	result = i2c_read_register(0x20, 0x0C, &res);
-	printf("gyroscope WHO AM I value: %d\r\n", res);
+	uint8_t res = 0;	
 
 	while (1) {
+		printf("------------------------------------------\r\n");
+		printf("        COMPSYS 704 - Group 7             \r\n");
+		printf("------------------------------------------\r\n");
+		// Read Status and WHO AM I from Accelerometer/Magnetometer
+		res = ReadU8(FXOS8700CQ_SLAVE_ADDR, FXOS8700CQ_STATUS);
+		printf("accelerometer status value: %d\r\n", res);
+		res = ReadU8(FXOS8700CQ_SLAVE_ADDR, FXOS8700CQ_WHO_AM_I);
+		printf("accelerometer WHO AM I value: %d\r\n", res);
 
+		// Read Status and WHO AM I from Gyroscope
+		res = ReadU8(FXAS21002_SLAVE_ADDR, FXAS21002_STATUS);
+		printf("gyroscope status value: %d\r\n", res);
+		res = ReadU8(FXAS21002_SLAVE_ADDR, FXAS21002_WHOAMI);
+		printf("gyroscope WHO AM I value: %d\r\n", res);
+
+		// Add some more delay
+		for(volatile long i=0; i<100000; i++);
 	}
 
 	while (1) {
