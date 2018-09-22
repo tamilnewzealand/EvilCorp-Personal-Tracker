@@ -150,24 +150,24 @@ int main(void) {
 	initApp();
 	// Initialize stack
 	gecko_init(&config);
-	// Initialize I2C
-	initI2C();
+	initFXOS8700CQ();
 
 	RETARGET_SerialInit();
 	associated = 0;
 
-	uint8_t res = 0;	
+	uint8_t res = 0;
+	AccelerometerData_t accel_data;
+	MagnetometerData_t mag_data;
 
 	while (1) {
 		printf("------------------------------------------\r\n");
 		printf("        COMPSYS 704 - Group 7             \r\n");
 		printf("------------------------------------------\r\n");
-		// Read Status and WHO AM I from Accelerometer/Magnetometer
-		res = ReadU8(FXOS8700CQ_SLAVE_ADDR, FXOS8700CQ_STATUS);
-		printf("accelerometer status value: %d\r\n", res);
-		res = ReadU8(FXOS8700CQ_SLAVE_ADDR, FXOS8700CQ_WHO_AM_I);
-		printf("accelerometer WHO AM I value: %d\r\n", res);
-
+		readAccel(&accel_data);
+		readMagn(&mag_data);
+		printf("Accelerometer Readings: X: %d, Y: %d, Z: %d\r\n", accel_data.x, accel_data.y, accel_data.z);
+		printf("Magnetometer Readings: X: %d, Y: %d, Z: %d\r\n", mag_data.x, mag_data.y, mag_data.z);
+		
 		// Read Status and WHO AM I from Gyroscope
 		res = ReadU8(FXAS21002_SLAVE_ADDR, FXAS21002_STATUS);
 		printf("gyroscope status value: %d\r\n", res);
@@ -175,7 +175,7 @@ int main(void) {
 		printf("gyroscope WHO AM I value: %d\r\n", res);
 
 		// Add some more delay
-		for(volatile long i=0; i<100000; i++);
+		for(volatile long i=0; i<10000000; i++);
 	}
 
 	while (1) {
