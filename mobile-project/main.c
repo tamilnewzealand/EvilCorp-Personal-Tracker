@@ -13,32 +13,11 @@
  * any purpose, you must agree to the terms of that agreement.
  **************************************************************************************************/
 
-/* Board headers */
-#include "init_mcu.h"
-#include "init_board.h"
-#include "init_app.h"
-#include "ble-configuration.h"
-#include "board_features.h"
-
-/* Bluetooth stack headers */
-#include "bg_types.h"
-#include "native_gecko.h"
-#include "gatt_db.h"
-
-/* Device initialization header */
-#include "hal-config.h"
-
-#include <stdio.h>
-#include "retargetserial.h"
-#include "sleep.h"
+#include "Drivers/includes.h"
 
 #include "Drivers/i2c.h"
-
-#if defined(HAL_CONFIG)
-#include "bsphalconfig.h"
-#else
-#include "bspconfig.h"
-#endif
+#include "Drivers/FXAS21002.h"
+#include "Drivers/FXOS8700CQ.h"
 
 #ifndef MAX_CONNECTIONS
 #define MAX_CONNECTIONS 4

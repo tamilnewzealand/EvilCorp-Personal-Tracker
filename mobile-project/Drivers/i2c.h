@@ -1,10 +1,7 @@
 #ifndef DRIVERS_I2C_H_
 #define DRIVERS_I2C_H_
 
-/* Libraries containing default Gecko configuration values */
-#include "em_emu.h"
-#include "em_cmu.h"
-#include "em_i2c.h"
+#include "includes.h"
 
 #define I2C_PORT gpioPortC
 #define I2C_SDA_PIN 10
