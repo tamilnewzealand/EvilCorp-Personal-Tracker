@@ -31,4 +31,7 @@
 #include "bspconfig.h"
 #endif
 
+void delay_us(uint32_t uSec);
+void delay_ms(uint32_t mSec);
+
 #endif /* DRIVERS_INCLUDES_H_ */

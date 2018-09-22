@@ -165,8 +165,8 @@ int main(void) {
 		printf("------------------------------------------\r\n");
 		readAccel(&accel_data);
 		readMagn(&mag_data);
-		printf("Accelerometer Readings: X: %d, Y: %d, Z: %d\r\n", accel_data.x, accel_data.y, accel_data.z);
-		printf("Magnetometer Readings: X: %d, Y: %d, Z: %d\r\n", mag_data.x, mag_data.y, mag_data.z);
+		printf("Accelerometer Readings: X: %.4f, Y: %.4f, Z: %.4f\r\n", (float)accel_data.x/SENSITIVITY_2G, (float)accel_data.y/SENSITIVITY_2G, (float)accel_data.z/SENSITIVITY_2G);
+		printf("Magnetometer Readings: X: %.4f, Y: %.4f, Z: %.4f\r\n", (float)mag_data.x/SENSITIVITY_MAG, (float)mag_data.y/SENSITIVITY_MAG, (float)mag_data.z/SENSITIVITY_MAG);
 		
 		// Read Status and WHO AM I from Gyroscope
 		res = ReadU8(FXAS21002_SLAVE_ADDR, FXAS21002_STATUS);
@@ -174,8 +174,7 @@ int main(void) {
 		res = ReadU8(FXAS21002_SLAVE_ADDR, FXAS21002_WHOAMI);
 		printf("gyroscope WHO AM I value: %d\r\n", res);
 
-		// Add some more delay
-		for(volatile long i=0; i<10000000; i++);
+		delay_ms(1000);
 	}
 
 	while (1) {
