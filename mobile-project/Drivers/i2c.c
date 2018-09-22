@@ -1,12 +1,16 @@
 #include "i2c.h"
 
 
+bool i2c_status = false;
+
+
 //----------------------------------------------------------------------------
 //	Init operations
 //----------------------------------------------------------------------------
 
 
-void initI2C() {
+void initI2C()
+{
 	/* Enable peripheral clock */
 	CMU_ClockEnable(cmuClock_HFPER, true);
 	CMU_ClockEnable(cmuClock_GPIO, true);
@@ -25,6 +29,13 @@ void initI2C() {
 		GPIO_PinOutClear(I2C_PORT, I2C_SCL_PIN);
 	}
 	I2C_Init(I2C0, &init);
+
+	i2c_status = true;
+}
+
+bool getI2CStatus()
+{
+	return i2c_status;
 }
 
 
@@ -33,7 +44,8 @@ void initI2C() {
 //----------------------------------------------------------------------------
 
 
-bool i2c_read_register(uint8_t addr, uint8_t reg, uint16_t *val) {
+bool i2c_read_register(uint8_t addr, uint8_t reg, uint16_t *val)
+{
 	uint8_t tx_buffer[1];
 	uint8_t rx_buffer[3];
 
@@ -67,7 +79,8 @@ bool i2c_read_register(uint8_t addr, uint8_t reg, uint16_t *val) {
 //----------------------------------------------------------------------------
 
 
-bool WriteU8(uint8_t uDevAddr, uint8_t uRegAddr, uint8_t uValue){
+bool WriteU8(uint8_t uDevAddr, uint8_t uRegAddr, uint8_t uValue)
+{
 	uint8_t data[2] = { uRegAddr, uValue};
 	/* Transfer structure */
 	I2C_TransferSeq_TypeDef i2cTransfer;
