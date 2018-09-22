@@ -1,6 +1,7 @@
 #ifndef DRIVERS_I2C_H_
 #define DRIVERS_I2C_H_
 
+/* Libraries containing default Gecko configuration values */
 #include "em_emu.h"
 #include "em_cmu.h"
 #include "em_i2c.h"
@@ -11,5 +12,17 @@
 
 void initI2C();
 bool i2c_read_register(uint8_t addr, uint8_t reg, uint16_t *val);
+
+bool WriteU8(uint8_t uDevAddr, uint8_t uRegAddr, uint8_t uValue);
+
+uint8_t ReadU8(uint8_t uDevAddr, uint8_t uRegAddr);
+int8_t ReadS8(uint8_t uDevAddr, uint8_t uRegAddr);
+
+bool Read(uint8_t uDevAddr, uint8_t uRegAddr, void *pBuffer, uint8_t uLenBytes);
+
+uint16_t ReadU16(uint8_t uDevAddr, uint8_t uRegAddr);
+int16_t ReadS16(uint8_t uDevAddr, uint8_t uRegAddr);
+uint16_t ReadU16LE(uint8_t uDevAddr, uint8_t uRegAddr);
+int16_t ReadS16LE(uint8_t uDevAddr, uint8_t uRegAddr);
 
 #endif /* DRIVERS_I2C_H_ */

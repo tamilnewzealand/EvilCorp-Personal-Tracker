@@ -1,5 +1,11 @@
 #include "i2c.h"
 
+
+//----------------------------------------------------------------------------
+//	Init operations
+//----------------------------------------------------------------------------
+
+
 void initI2C() {
 	/* Enable peripheral clock */
 	CMU_ClockEnable(cmuClock_HFPER, true);
@@ -20,6 +26,12 @@ void initI2C() {
 	}
 	I2C_Init(I2C0, &init);
 }
+
+
+//----------------------------------------------------------------------------
+//	Legacy operations
+//----------------------------------------------------------------------------
+
 
 bool i2c_read_register(uint8_t addr, uint8_t reg, uint16_t *val) {
 	uint8_t tx_buffer[1];
@@ -47,4 +59,144 @@ bool i2c_read_register(uint8_t addr, uint8_t reg, uint16_t *val) {
 	} else {
 		return false;
 	}
+}
+
+
+//----------------------------------------------------------------------------
+//	WRITE operations
+//----------------------------------------------------------------------------
+
+
+bool WriteU8(uint8_t uDevAddr, uint8_t uRegAddr, uint8_t uValue){
+	uint8_t data[2] = { uRegAddr, uValue};
+	/* Transfer structure */
+	I2C_TransferSeq_TypeDef i2cTransfer;
+
+	/* Initializing I2C transfer */
+	i2cTransfer.addr = uDevAddr << 1;
+	/* Master write */
+	i2cTransfer.flags = I2C_FLAG_WRITE;
+
+	/* Transmit buffer, 2 bytes to send */
+	i2cTransfer.buf[0].data = data;
+	i2cTransfer.buf[0].len = 2;
+
+	i2cTransfer.buf[1].data = 0UL;
+	i2cTransfer.buf[1].len = 0;
+
+	I2C_TransferReturn_TypeDef result;
+	result = I2C_TransferInit(I2C0, &i2cTransfer);
+	while (result == i2cTransferInProgress) result = I2C_Transfer(I2C0);
+
+	if (result == i2cTransferDone) return true;
+	return false;
+}
+
+
+//----------------------------------------------------------------------------
+//	READ operations
+//----------------------------------------------------------------------------
+
+
+bool Read(uint8_t uDevAddr, uint8_t uRegAddr, void *pBuffer, uint8_t uLenBytes)
+{
+	/* Transfer structure */
+	I2C_TransferSeq_TypeDef i2cTransfer;
+
+	/* Initializing I2C transfer */
+	i2cTransfer.addr = uDevAddr << 1;
+	/* Master write */
+	i2cTransfer.flags = I2C_FLAG_WRITE_READ;
+
+	/* Transmit buffer, no data to send */
+	i2cTransfer.buf[0].data = &uRegAddr;
+	i2cTransfer.buf[0].len = 1;
+
+	/* Receive buffer, multiple bytes to receive */
+	i2cTransfer.buf[1].data = (uint8_t  *)pBuffer;
+	i2cTransfer.buf[1].len = uLenBytes;
+
+	I2C_TransferReturn_TypeDef result;
+	result = I2C_TransferInit(I2C0, &i2cTransfer);
+	while (result == i2cTransferInProgress) result = I2C_Transfer(I2C0);
+
+	if (result == i2cTransferDone) return true;
+	return false;
+}
+
+uint8_t ReadU8(uint8_t uDevAddr, uint8_t uRegAddr)
+{
+	uint8_t data = 0;
+
+	/* Transfer structure */
+	I2C_TransferSeq_TypeDef i2cTransfer;
+
+	/* Initializing I2C transfer */
+	i2cTransfer.addr = uDevAddr << 1;
+	/* Master write */
+	i2cTransfer.flags = I2C_FLAG_WRITE_READ;
+
+	/* Transmit buffer, no data to send */
+	i2cTransfer.buf[0].data = &uRegAddr;
+	i2cTransfer.buf[0].len = 1;
+
+	/* Receive buffer, one byte to receive */
+	i2cTransfer.buf[1].data = &data;
+	i2cTransfer.buf[1].len = 1;
+
+	I2C_TransferReturn_TypeDef result;
+	result = I2C_TransferInit(I2C0, &i2cTransfer);
+	while (result == i2cTransferInProgress) result = I2C_Transfer(I2C0);
+
+	if (result == i2cTransferDone) return data;
+	else return 0;
+}
+
+int8_t ReadS8(uint8_t uDevAddr, uint8_t uRegAddr)
+{
+	return (int8_t)ReadU8(uDevAddr, uRegAddr);
+}
+
+uint16_t ReadU16(uint8_t uDevAddr, uint8_t uRegAddr)
+{
+	uint16_t data = 0;
+
+	/* Transfer structure */
+	I2C_TransferSeq_TypeDef i2cTransfer;
+
+	/* Initializing I2C transfer */
+	i2cTransfer.addr = uDevAddr << 1;
+	/* Master write */
+	i2cTransfer.flags = I2C_FLAG_WRITE_READ;
+
+	/* Transmit buffer, no data to send */
+	i2cTransfer.buf[0].data = &uRegAddr;
+	i2cTransfer.buf[0].len = 1;
+
+	/* Receive buffer, two bytes to receive */
+	i2cTransfer.buf[1].data = (uint8_t *)&data;
+	i2cTransfer.buf[1].len = 2;
+
+	I2C_TransferReturn_TypeDef result;
+	result = I2C_TransferInit(I2C0, &i2cTransfer);
+	while (result == i2cTransferInProgress) result = I2C_Transfer(I2C0);
+
+	if (result == i2cTransferDone) return data;
+	else return 0;
+}
+
+int16_t ReadS16(uint8_t uDevAddr, uint8_t uRegAddr)
+{
+	return (int16_t)ReadU16(uDevAddr, uRegAddr);
+}
+
+uint16_t ReadU16LE(uint8_t uDevAddr, uint8_t uRegAddr)
+{
+	uint16_t temp = ReadU16(uDevAddr, uRegAddr);
+	return (temp >> 8) | (temp << 8);
+}
+
+int16_t ReadS16LE(uint8_t uDevAddr, uint8_t uRegAddr)
+{
+	return (int16_t)ReadU16LE(uDevAddr, uRegAddr);
 }
