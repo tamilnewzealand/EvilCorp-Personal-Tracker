@@ -150,30 +150,31 @@ int main(void) {
 	initApp();
 	// Initialize stack
 	gecko_init(&config);
-	initFXOS8700CQ();
+	if (!initFXOS8700CQ()) while (1);
+	if (!initFXAS21002()) while (1);
 
 	RETARGET_SerialInit();
 	associated = 0;
 
-	uint8_t res = 0;
 	AccelerometerData_t accel_data;
 	MagnetometerData_t mag_data;
+	GyroscopeData_t gyro_data;
 
 	while (1) {
 		printf("------------------------------------------\r\n");
 		printf("        COMPSYS 704 - Group 7             \r\n");
 		printf("------------------------------------------\r\n");
+		
 		readAccel(&accel_data);
 		readMagn(&mag_data);
+		readGryo(&gyro_data);
+		
 		printf("Accelerometer Readings: X: %.4f, Y: %.4f, Z: %.4f\r\n", (float)accel_data.x/SENSITIVITY_2G, (float)accel_data.y/SENSITIVITY_2G, (float)accel_data.z/SENSITIVITY_2G);
 		printf("Magnetometer Readings: X: %.4f, Y: %.4f, Z: %.4f\r\n", (float)mag_data.x/SENSITIVITY_MAG, (float)mag_data.y/SENSITIVITY_MAG, (float)mag_data.z/SENSITIVITY_MAG);
-		
-		// Read Status and WHO AM I from Gyroscope
-		res = ReadU8(FXAS21002_SLAVE_ADDR, FXAS21002_STATUS);
-		printf("gyroscope status value: %d\r\n", res);
-		res = ReadU8(FXAS21002_SLAVE_ADDR, FXAS21002_WHOAMI);
-		printf("gyroscope WHO AM I value: %d\r\n", res);
+		printf("Gyroscope Readings: Roll: %.4f, Pitch: %.4f, Yaw: %.4f\r\n", (float)gyro_data.x/SENSITIVITY_250, (float)gyro_data.y/SENSITIVITY_250, (float)gyro_data.z/SENSITIVITY_250);
 
+		printf("Temperature readings: %d, %d \r\n", readTempFXAS21002(), readTempFXOS8700CQ());
+		
 		delay_ms(1000);
 	}
 

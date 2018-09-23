@@ -69,7 +69,7 @@ bool readMagn(MagnetometerData_t *pData)
 	return true;
 }
 
-uint8_t readTempFXOS8700CQ(void)
+int8_t readTempFXOS8700CQ(void)
 {
-	return ReadU8(FXOS8700CQ_SLAVE_ADDR, FXOS8700CQ_TEMP);
+	return ReadS8(FXOS8700CQ_SLAVE_ADDR, FXOS8700CQ_TEMP);
 }

@@ -1,9 +1,6 @@
 #ifndef DRIVERS_FXOS8700CQ_H_
 #define DRIVERS_FXOS8700CQ_H_
 
-#include <stdint.h>
-#include <stdbool.h>
-
 #include "i2c.h"
 
 #define FXOS8700CQ_SLAVE_ADDR 0x1E
@@ -178,6 +175,6 @@ bool initFXOS8700CQ();
 bool standbyFXOS8700CQ(bool bIsStandby);
 bool readAccel(AccelerometerData_t *pData);
 bool readMagn(MagnetometerData_t *pData);
-uint8_t readTempFXOS8700CQ(void);
+int8_t readTempFXOS8700CQ(void);
 
 #endif /* DRIVERS_FXOS8700CQ_H_ */
