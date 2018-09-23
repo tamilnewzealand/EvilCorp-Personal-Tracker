@@ -7,6 +7,20 @@
 *.m51
 *.omf
 *.bak
+*.o
+*.d
+*.s37
+*.hex
+*.bin
+*.ld
+*.map
+*.mk
 
 /.metadata
+/.vscode
 /outgoing
+
+**/.pdm
+**/.settings
+**/GNU ARM v7.2.1 - Default/*
+!*.axf
