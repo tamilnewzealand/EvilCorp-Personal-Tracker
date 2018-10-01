@@ -80,90 +80,75 @@ static const gecko_configuration_t config = {
 static uint8 _conn_handle = 0xFF;
 static int _main_state;
 
+/*
+ * Resets Variables
+ */
 static void reset_variables() {
 	_conn_handle = 0xFF;
 	_main_state = STATE_ADVERTISING;
 }
 
-/**
- * @brief  SPP server mode main loop
+/*
+ * Main loop
  */
 void main(void) {
-	// Initialize device
-	initMcu();
-	// Initialize board
-	initBoard();
-	// Initialize application
-	initApp();
-	// Initialize stack
-	gecko_init(&config);
+	initMcu(); // Initialize device
+	initBoard(); // Initialize board
+	initApp(); // Initialize Application
+	gecko_init(&config); // Initialize stack
 
 	RETARGET_SerialInit();
 	char printbuf[128];
 
-  while (1) {
-    /* Event pointer for handling events */
-    struct gecko_cmd_packet* evt;
-    /* Check for stack event. */
-    evt = gecko_wait_event();
+	/* Bluetooth Main Loop */
+	while (1) {
+		struct gecko_cmd_packet* evt; // Event pointer for handling events
+		evt = gecko_wait_event(); // Check for stack event
 
-    /* Handle events */
-    switch (BGLIB_MSG_ID(evt->header)) {
+		/* Handle events */
+		switch (BGLIB_MSG_ID(evt->header)) {
+			// After Reset or Boot
+			case gecko_evt_system_boot_id:
+				printf("REBOOTED!\r\n");
 
-    	/* This boot event is generated when the system boots up after reset.
-      	* Here the system is set to start advertising immediately after boot procedure. */
-    	case gecko_evt_system_boot_id:
-    		reset_variables();
-
-    		gecko_cmd_le_gap_set_mode(le_gap_general_discoverable, le_gap_undirected_connectable);
-    		break;
-
-    	/* Connection opened event */
-    	case gecko_evt_le_connection_opened_id:
-    		_conn_handle = evt->data.evt_le_connection_opened.connection;
-    		printf("CONNECTED!/r/n");
-    		_main_state = STATE_CONNECTED;
-
-    		/* request connection parameter update.
-    		 * conn.interval min 20ms, max 40ms, slave latency 4 intervals,
-    		 * supervision timeout 2 seconds
-    		 * (These should be compliant with Apple Bluetooth Accessory Design Guidelines) */
-    		gecko_cmd_le_connection_set_parameters(_conn_handle, 16, 32, 4, 200);
-    		break;
-
-    	case gecko_evt_le_connection_parameters_id:
-    		printf("Conn.parameters: interval %u units, txsize %u\r\n",
-    				evt->data.evt_le_connection_parameters.interval,
-					evt->data.evt_le_connection_parameters.txsize);
-    		break;
-
-		case gecko_evt_le_connection_closed_id:
-			printf("DISCONNECTED!");
-
-			reset_variables();
-			SLEEP_SleepBlockEnd(sleepEM2);
-
-			gecko_cmd_le_gap_set_mode(le_gap_general_discoverable, le_gap_undirected_connectable);
-			break;
-
-		case gecko_evt_gatt_server_characteristic_status_id:
-			{
+				reset_variables();
+				gecko_cmd_le_gap_set_mode(le_gap_general_discoverable, le_gap_undirected_connectable); // Start Discovery
 				break;
-			}
-			break;
 
-		case gecko_evt_gatt_server_attribute_value_id:
-			{
-				 // data received from SPP client -> print to UART
+			// Connected
+			case gecko_evt_le_connection_opened_id:
+				printf("CONNECTED!\r\n");
+
+				_conn_handle = evt->data.evt_le_connection_opened.connection;
+				_main_state = STATE_CONNECTED;
+				gecko_cmd_le_connection_set_parameters(_conn_handle, 16, 32, 4, 200);
+				break;
+
+			// Disconnected
+			case gecko_evt_le_connection_closed_id:
+				printf("DISCONNECTED!\r\n");
+
+				reset_variables();
+				SLEEP_SleepBlockEnd(sleepEM2); // Enable sleeping
+				gecko_cmd_le_gap_set_mode(le_gap_general_discoverable, le_gap_undirected_connectable); // Restart Discovery
+				break;
+
+			// Connection Found
+			case gecko_evt_le_connection_parameters_id:
+				printf("Conn.parameters: interval %u units, txsize %u\r\n",
+				evt->data.evt_le_connection_parameters.interval,
+				evt->data.evt_le_connection_parameters.txsize);
+				break;
+
+			// Data Received from Mobile Device
+			case gecko_evt_gatt_server_attribute_value_id:
 				 memcpy(printbuf, evt->data.evt_gatt_server_attribute_value.value.data, evt->data.evt_gatt_server_attribute_value.value.len);
 				 printbuf[evt->data.evt_gatt_server_attribute_value.value.len] = 0;
 				 printf(printbuf);
-			}
-			break;
+				break;
 
-
-		default:
-			break;
-    	}
-  	}
+			default:
+				break;
+		}
+	}
 }

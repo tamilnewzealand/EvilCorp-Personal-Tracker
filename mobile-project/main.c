@@ -12,7 +12,6 @@
  * "Silabs_License_Agreement.txt" for details. Before using this software for
  * any purpose, you must agree to the terms of that agreement.
  **************************************************************************************************/
-
 #include "Drivers/includes.h"
 
 #include "Drivers/i2c.h"
@@ -71,6 +70,15 @@ static uint32 _service_handle;
 static uint16 _char_handle;
 static uint8 associated;
 
+AccelerometerData_t accel_data;
+MagnetometerData_t mag_data;
+GyroscopeData_t gyro_data;
+int8_t temp_data_1;
+int8_t temp_data_2;
+
+/*
+ * Resets Variables
+ */
 static void reset_variables() {
 	_conn_handle = 0xFF;
 	_main_state = DISCONNECTED;
@@ -78,6 +86,9 @@ static void reset_variables() {
 	_char_handle = 0;
 }
 
+/*
+ * Tries to find desired Bluetooth service and characteristic
+ */
 static int process_scan_response(struct gecko_msg_le_gap_scan_response_evt_t *responses) {
     int address_num = 0;
     int address_match_found = 0;
@@ -110,137 +121,145 @@ static int process_scan_response(struct gecko_msg_le_gap_scan_response_evt_t *re
     return(address_match_found);
 }
 
-static void send_spp_data() {
-	uint8 len = 0;
-	uint8 data[20];
+/*
+ * Sends a max 20 byte character array to the base station
+ */
+static void send_line(char* data, uint8 len) {
 	uint16 result;
-	int c;
 
-	while(len < 20) {
-		  c = RETARGET_ReadChar();
+	// stack may return "out-of-memory" error if the local buffer is full -> in that case, just keep trying until the command succeeds
+	do {
+		result = gecko_cmd_gatt_write_characteristic_value_without_response(_conn_handle, _char_handle, len, data)->result;
+	} while (result == bg_err_out_of_memory);
 
-		  if (c < 0) {
-			  break;
-		  } else {
-			  data[len++] = (uint8) c;
-		  }
-	}
-
-	if (len > 0) {
-		// stack may return "out-of-memory" error if the local buffer is full -> in that case, just keep trying until the command succeeds
-		do {
-			result = gecko_cmd_gatt_write_characteristic_value_without_response(_conn_handle, _char_handle, len, data)->result;
-		}
-		while (result == bg_err_out_of_memory);
-		if (result != 0) {
-			printf("WTF: %x\r\n", result);
-		}
+	if (result != 0) {
+		printf("ERROR: %x\r\n", result);
 	}
 }
 
-/**
- * @brief  SPP client mode main loop
+/*
+ * Formats and sends a float
+ */
+void send_float(char* intro, float data) {
+	char float_line[20];
+	snprintf(float_line, 20, intro, data);
+	send_line(float_line, 20);
+}
+
+/*
+ * Runs every second, sends data to base station
+ */
+void send_data() {
+	char* line;
+	readAccel(&accel_data);
+	readMagn(&mag_data);
+	readGryo(&gyro_data);
+	temp_data_1 = readTempFXAS21002();
+	temp_data_2 = readTempFXOS8700CQ();
+
+	line = "\r\n";
+	send_line(line, 2);
+	line = "==================\r\n";
+	send_line(line, 20);
+
+	line = "COMPSYS 704 - Grp7\r\n";
+	send_line(line, 20);
+	line = "------------------\r\n";
+	send_line(line, 20);
+
+	send_float("Accel X: %.4f\r\n", (float)accel_data.x/SENSITIVITY_2G);
+	send_float("Accel Y: %.4f\r\n", (float)accel_data.y/SENSITIVITY_2G);
+	send_float("Accel Z: %.4f\r\n", (float)accel_data.z/SENSITIVITY_2G);
+	line = "------------------\r\n";
+	send_line(line, 20);
+
+	send_float("Mag X: %.4f\r\n", (float)mag_data.x/SENSITIVITY_MAG);
+	send_float("Mag Y: %.4f\r\n", (float)mag_data.y/SENSITIVITY_MAG);
+	send_float("Mag Z: %.4f\r\n", (float)mag_data.z/SENSITIVITY_MAG);
+	line = "------------------\r\n";
+	send_line(line, 20);
+
+	send_float("Gyro R: %.4f\r\n", (float)gyro_data.x/SENSITIVITY_250);
+	send_float("Gyro P: %.4f\r\n", (float)gyro_data.y/SENSITIVITY_250);
+	send_float("Gyro Y: %.4f\r\n", (float)gyro_data.z/SENSITIVITY_250);
+	line = "------------------\r\n";
+	send_line(line, 20);
+
+	send_float("Temp 1: %.0f\r\n", (float) temp_data_1);
+	send_float("Temp 2: %.0f\r\n", (float) temp_data_2);
+}
+
+/*
+ * Main loop
  */
 int main(void) {
-	// Initialize device
-	initMcu();
-	// Initialize board
-	initBoard();
-	// Initialize application
-	initApp();
-	// Initialize stack
-	gecko_init(&config);
-	if (!initFXOS8700CQ()) while (1);
+	initMcu(); // Initialize device
+	initBoard(); // Initialize board
+	initApp(); // Initialize application
+	gecko_init(&config); // Initialize stack
+
+	if (!initFXOS8700CQ()) while (1); // Initialize Temperature Sensors
 	if (!initFXAS21002()) while (1);
 
 	RETARGET_SerialInit();
 	associated = 0;
 
-	AccelerometerData_t accel_data;
-	MagnetometerData_t mag_data;
-	GyroscopeData_t gyro_data;
+	printf("Starting Mobile Device\r\n");
 
+	/* Bluetooth Main Loop */
 	while (1) {
-		printf("------------------------------------------\r\n");
-		printf("        COMPSYS 704 - Group 7             \r\n");
-		printf("------------------------------------------\r\n");
-		
-		readAccel(&accel_data);
-		readMagn(&mag_data);
-		readGryo(&gyro_data);
-		
-		printf("Accelerometer Readings: X: %.4f, Y: %.4f, Z: %.4f\r\n", (float)accel_data.x/SENSITIVITY_2G, (float)accel_data.y/SENSITIVITY_2G, (float)accel_data.z/SENSITIVITY_2G);
-		printf("Magnetometer Readings: X: %.4f, Y: %.4f, Z: %.4f\r\n", (float)mag_data.x/SENSITIVITY_MAG, (float)mag_data.y/SENSITIVITY_MAG, (float)mag_data.z/SENSITIVITY_MAG);
-		printf("Gyroscope Readings: Roll: %.4f, Pitch: %.4f, Yaw: %.4f\r\n", (float)gyro_data.x/SENSITIVITY_250, (float)gyro_data.y/SENSITIVITY_250, (float)gyro_data.z/SENSITIVITY_250);
-
-		printf("Temperature readings: %d, %d \r\n", readTempFXAS21002(), readTempFXOS8700CQ());
-		
-		delay_ms(1000);
-	}
-
-	while (1) {
-		/* Event pointer for handling events */
-		struct gecko_cmd_packet* evt;
-		/* Check for stack event. */
-		evt = gecko_wait_event();
+		struct gecko_cmd_packet* evt; // Event pointer for handling events
+		evt = gecko_wait_event(); // Check for stack event
 
 		/* Handle events */
 		switch (BGLIB_MSG_ID(evt->header)) {
-			/* This boot event is generated when the system boots up after reset.
-			 * Here the system is set to start advertising immediately after boot procedure. */
+			// After Reset or Boot
 			case gecko_evt_system_boot_id:
-				reset_variables();
+				printf("REBOOTED!\r\n");
 
-				// start discovery
-				gecko_cmd_le_gap_discover(le_gap_discover_generic);
+				reset_variables();
+				gecko_cmd_le_gap_discover(le_gap_discover_generic); // Start discovery
 				break;
 
+			// When responses received from discovery
 			case gecko_evt_le_gap_scan_response_id:
-				// process scan responses: this function returns 1 if we found the service we are looking for
-				if(process_scan_response(&(evt->data.evt_le_gap_scan_response)) > 0) {
+				if (process_scan_response(&(evt->data.evt_le_gap_scan_response)) > 0) {
 					struct gecko_msg_le_gap_open_rsp_t *pResp;
 
-					// match found -> stop discovery and try to connect
-					gecko_cmd_le_gap_end_procedure();
-
+					gecko_cmd_le_gap_end_procedure(); // Match found -> stop discovery and try to connect
 					pResp = gecko_cmd_le_gap_open(evt->data.evt_le_gap_scan_response.address, evt->data.evt_le_gap_scan_response.address_type);
 
-
-					// make copy of connection handle for later use (for example, to cancel the connection attempt)
-					_conn_handle = pResp->connection;
-
+					_conn_handle = pResp->connection; // Make copy of connection handle for later use
 				}
 				break;
 
-			/* Connection opened event */
+			// Connected
 			case gecko_evt_le_connection_opened_id:
 				printf("CONNECTED!\r\n");
 
-				// start service discovery (we are only interested in one UUID)
-				gecko_cmd_gatt_discover_primary_services_by_uuid(_conn_handle, 16, serviceUUID);
+				gecko_cmd_gatt_discover_primary_services_by_uuid(_conn_handle, 16, serviceUUID); // Start service discovery
 				_main_state = FIND_SERVICE;
-
 				break;
 
+			// Disconnected
 			case gecko_evt_le_connection_closed_id:
 				printf("DISCONNECTED!\r\n");
 
 				reset_variables();
-				// stop TX timer:
-				gecko_cmd_hardware_set_soft_timer(0, SPP_TX_TIMER, 0);
+				gecko_cmd_hardware_set_soft_timer(0, SPP_TX_TIMER, 0); // Stop Transmit Timer:
 
-				SLEEP_SleepBlockEnd(sleepEM2); // enable sleeping after disconnect
-
-				// create one-shot soft timer that will restart discovery after 1 second delay
-				gecko_cmd_hardware_set_soft_timer(32768, RESTART_TIMER, true);
+				SLEEP_SleepBlockEnd(sleepEM2); // Enable sleeping after disconnect
+				gecko_cmd_hardware_set_soft_timer(32768, RESTART_TIMER, true); // Create timer to restart discovery after 1s delay
 				break;
 
+			// Connection Parameters Received
 			case gecko_evt_le_connection_parameters_id:
 				printf("Conn.parameters: interval %u units, txsize %u\r\n",
 				evt->data.evt_le_connection_parameters.interval,
 				evt->data.evt_le_connection_parameters.txsize);
 				break;
 
+			// Service Parameters Received
 			case gecko_evt_gatt_service_id:
 				if(evt->data.evt_gatt_service.uuid.len == 16) {
 					if(memcmp(serviceUUID, evt->data.evt_gatt_service.uuid.data,16) == 0) {
@@ -250,45 +269,7 @@ int main(void) {
 				}
 				break;
 
-			case gecko_evt_gatt_procedure_completed_id:
-				switch(_main_state) {
-					case FIND_SERVICE:
-						if (_service_handle > 0) {
-							// Service found, next search for characteristics
-							gecko_cmd_gatt_discover_characteristics(_conn_handle, _service_handle);
-							_main_state = FIND_CHAR;
-						} else {
-							// No service found -> disconnect
-							printf("SPP service not found?\r\n");
-							gecko_cmd_endpoint_close(_conn_handle);
-						}
-						break;
-
-					case FIND_CHAR:
-						if (_char_handle > 0) {
-							// Char found, turn on indications
-							gecko_cmd_gatt_set_characteristic_notification(_conn_handle, _char_handle, gatt_notification);
-							_main_state = ENABLE_NOTIF;
-						} else {
-							// No characteristic found -> disconnect
-							printf("SPP char not found?\r\n");
-							gecko_cmd_endpoint_close(_conn_handle);
-						}
-						break;
-
-					case ENABLE_NOTIF:
-						_main_state = DATA_MODE;
-						printf("SPP mode ON\r\n");
-						// start soft timer that is used to offload local TX buffer
-						gecko_cmd_hardware_set_soft_timer(328, SPP_TX_TIMER, 0);
-						SLEEP_SleepBlockBegin(sleepEM2); // disable sleeping when SPP mode active
-						break;
-
-					default:
-						break;
-				}
-				break;
-
+			// Characteristic Parameters Received
 			case gecko_evt_gatt_characteristic_id:
 				if(evt->data.evt_gatt_characteristic.uuid.len == 16) {
 					if(memcmp(charUUID, evt->data.evt_gatt_characteristic.uuid.data,16) == 0) {
@@ -298,12 +279,49 @@ int main(void) {
 				}
 				break;
 
-			/* Software Timer event */
+			// Completed a procedure
+			case gecko_evt_gatt_procedure_completed_id:
+				switch(_main_state) {
+					// Found a service
+					case FIND_SERVICE:
+						if (_service_handle > 0) { // Service found -> search for characteristics
+							gecko_cmd_gatt_discover_characteristics(_conn_handle, _service_handle);
+							_main_state = FIND_CHAR;
+						} else { // No service found -> disconnect
+							printf("SPP service not found\r\n");
+							gecko_cmd_endpoint_close(_conn_handle);
+						}
+						break;
+
+					// Found a characteristic
+					case FIND_CHAR:
+						if (_char_handle > 0) { // Characteristic found -> turn on indications
+							gecko_cmd_gatt_set_characteristic_notification(_conn_handle, _char_handle, gatt_notification);
+							_main_state = ENABLE_NOTIF;
+						} else { // No characteristic found -> disconnect
+							printf("SPP char not found\r\n");
+							gecko_cmd_endpoint_close(_conn_handle);
+						}
+						break;
+
+					// Notify (Write without response) has started
+					case ENABLE_NOTIF:
+						_main_state = DATA_MODE;
+						printf("SPP mode ON\r\n");
+						gecko_cmd_hardware_set_soft_timer(32768, SPP_TX_TIMER, 0); // start transmit timer
+						SLEEP_SleepBlockBegin(sleepEM2); // Disable sleeping when SPP mode active
+						break;
+
+					default:
+						break;
+				}
+				break;
+
+			// Transmit Timer Event
 			case gecko_evt_hardware_soft_timer_id:
 				switch (evt->data.evt_hardware_soft_timer.handle) {
 					case SPP_TX_TIMER:
-						// send data from local TX buffer
-						send_spp_data();
+						send_data();
 						break;
 
 					case RESTART_TIMER:
