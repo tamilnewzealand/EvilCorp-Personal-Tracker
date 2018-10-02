@@ -51,6 +51,7 @@ static const gecko_configuration_t config = {
 #define ENABLE_NOTIF 	4
 #define DATA_MODE		5
 
+#define SHOW_RSSI_MODE
 
 // SPP service UUID: 2df1425f-32ca-4e67-aad2-3176631e6559
 const uint8 serviceUUID[16] = {0x59, 0x65, 0x1e, 0x63, 0x76, 0x31, 0xd2, 0xaa, 0x67, 0x4e, 0xca, 0x32, 0x5f, 0x42, 0xf1, 0x2d};
@@ -203,6 +204,7 @@ int main(void) {
 
 	RETARGET_SerialInit();
 	associated = 0;
+	char datas_line[20];
 
 	printf("Starting Mobile Device\r\n");
 
@@ -223,10 +225,29 @@ int main(void) {
 
 			// When responses received from discovery
 			case gecko_evt_le_gap_scan_response_id:
-				if (process_scan_response(&(evt->data.evt_le_gap_scan_response)) > 0) {
+			#ifdef SHOW_RSSI_MODE
+				snprintf(datas_line, 20, "BD_ADDR=%02x", (uint8)(evt->data.evt_le_gap_scan_response.address.addr[0]));
+				send_line(datas_line, 11);
+				snprintf(datas_line, 20, ":%02x", (uint8)(evt->data.evt_le_gap_scan_response.address.addr[1]));
+				send_line(datas_line, 4);
+				snprintf(datas_line, 20, ":%02x", (uint8)(evt->data.evt_le_gap_scan_response.address.addr[2]));
+				send_line(datas_line, 4);
+				snprintf(datas_line, 20, ":%02x", (uint8)(evt->data.evt_le_gap_scan_response.address.addr[3]));
+				send_line(datas_line, 4);
+				snprintf(datas_line, 20, ":%02x", (uint8)(evt->data.evt_le_gap_scan_response.address.addr[4]));
+				send_line(datas_line, 4);
+				snprintf(datas_line, 20, ":%02x", (uint8)(evt->data.evt_le_gap_scan_response.address.addr[5]));
+				send_line(datas_line, 4);
+				snprintf(datas_line, 20, "RSSI:%d\r\n", (int8)evt->data.evt_le_gap_scan_response.rssi);
+				send_line(datas_line, 11);
+				char* line = "------------------\r\n";
+				send_line(line, 20);
+			#endif
+				if ((associated == 0) && (process_scan_response(&(evt->data.evt_le_gap_scan_response)) > 0)) {
+					associated = 1;
 					struct gecko_msg_le_gap_open_rsp_t *pResp;
 
-					gecko_cmd_le_gap_end_procedure(); // Match found -> stop discovery and try to connect
+					//gecko_cmd_le_gap_end_procedure(); // Match found -> stop discovery and try to connect
 					pResp = gecko_cmd_le_gap_open(evt->data.evt_le_gap_scan_response.address, evt->data.evt_le_gap_scan_response.address_type);
 
 					_conn_handle = pResp->connection; // Make copy of connection handle for later use
@@ -321,7 +342,9 @@ int main(void) {
 			case gecko_evt_hardware_soft_timer_id:
 				switch (evt->data.evt_hardware_soft_timer.handle) {
 					case SPP_TX_TIMER:
+					#ifndef SHOW_RSSI_MODE
 						send_data();
+					#endif
 						break;
 
 					case RESTART_TIMER:
