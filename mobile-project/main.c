@@ -77,6 +77,8 @@ GyroscopeData_t gyro_data;
 int8_t temp_data_1;
 int8_t temp_data_2;
 
+uint8 signals[100][7] = {0};
+
 /*
  * Resets Variables
  */
@@ -152,11 +154,6 @@ void send_float(char* intro, float data) {
  */
 void send_data() {
 	char* line;
-	readAccel(&accel_data);
-	readMagn(&mag_data);
-	readGryo(&gyro_data);
-	temp_data_1 = readTempFXAS21002();
-	temp_data_2 = readTempFXOS8700CQ();
 
 	line = "\r\n";
 	send_line(line, 2);
@@ -168,26 +165,44 @@ void send_data() {
 	line = "------------------\r\n";
 	send_line(line, 20);
 
-	send_float("Accel X: %.4f\r\n", (float)accel_data.x/SENSITIVITY_2G);
-	send_float("Accel Y: %.4f\r\n", (float)accel_data.y/SENSITIVITY_2G);
-	send_float("Accel Z: %.4f\r\n", (float)accel_data.z/SENSITIVITY_2G);
-	line = "------------------\r\n";
-	send_line(line, 20);
+	#ifdef SHOW_RSSI_MODE
+		char signal_line[20];
+		for (int i=0;i<10;i++) {
+			if (signals[i][6] != 0) {
+				snprintf(signal_line, 20, "%02x:%02x:%02x:%02x:%02x:%02x\r\n", signals[i][0], signals[i][1], signals[i][2], signals[i][3], signals[i][4], signals[i][5]);
+				send_line(signal_line, 20);
+				snprintf(signal_line, 20, "RSSI:%d\r\n", (int8)signals[i][6]);
+				send_line(signal_line, 20);
+			}
+		}
+	#else
+		readAccel(&accel_data);
+		readMagn(&mag_data);
+		readGryo(&gyro_data);
+		temp_data_1 = readTempFXAS21002();
+		temp_data_2 = readTempFXOS8700CQ();
 
-	send_float("Mag X: %.4f\r\n", (float)mag_data.x/SENSITIVITY_MAG);
-	send_float("Mag Y: %.4f\r\n", (float)mag_data.y/SENSITIVITY_MAG);
-	send_float("Mag Z: %.4f\r\n", (float)mag_data.z/SENSITIVITY_MAG);
-	line = "------------------\r\n";
-	send_line(line, 20);
+		send_float("Accel X: %.4f\r\n", (float)accel_data.x/SENSITIVITY_2G);
+		send_float("Accel Y: %.4f\r\n", (float)accel_data.y/SENSITIVITY_2G);
+		send_float("Accel Z: %.4f\r\n", (float)accel_data.z/SENSITIVITY_2G);
+		line = "------------------\r\n";
+		send_line(line, 20);
 
-	send_float("Gyro R: %.4f\r\n", (float)gyro_data.x/SENSITIVITY_250);
-	send_float("Gyro P: %.4f\r\n", (float)gyro_data.y/SENSITIVITY_250);
-	send_float("Gyro Y: %.4f\r\n", (float)gyro_data.z/SENSITIVITY_250);
-	line = "------------------\r\n";
-	send_line(line, 20);
+		send_float("Mag X: %.4f\r\n", (float)mag_data.x/SENSITIVITY_MAG);
+		send_float("Mag Y: %.4f\r\n", (float)mag_data.y/SENSITIVITY_MAG);
+		send_float("Mag Z: %.4f\r\n", (float)mag_data.z/SENSITIVITY_MAG);
+		line = "------------------\r\n";
+		send_line(line, 20);
 
-	send_float("Temp 1: %.0f\r\n", (float) temp_data_1);
-	send_float("Temp 2: %.0f\r\n", (float) temp_data_2);
+		send_float("Gyro R: %.4f\r\n", (float)gyro_data.x/SENSITIVITY_250);
+		send_float("Gyro P: %.4f\r\n", (float)gyro_data.y/SENSITIVITY_250);
+		send_float("Gyro Y: %.4f\r\n", (float)gyro_data.z/SENSITIVITY_250);
+		line = "------------------\r\n";
+		send_line(line, 20);
+
+		send_float("Temp 1: %.0f\r\n", (float) temp_data_1);
+		send_float("Temp 2: %.0f\r\n", (float) temp_data_2);
+	#endif
 }
 
 /*
@@ -212,6 +227,7 @@ int main(void) {
 	while (1) {
 		struct gecko_cmd_packet* evt; // Event pointer for handling events
 		evt = gecko_wait_event(); // Check for stack event
+		uint8 signal_strength = 0;
 
 		/* Handle events */
 		switch (BGLIB_MSG_ID(evt->header)) {
@@ -225,31 +241,23 @@ int main(void) {
 
 			// When responses received from discovery
 			case gecko_evt_le_gap_scan_response_id:
-			#ifdef SHOW_RSSI_MODE
-				snprintf(datas_line, 20, "BD_ADDR=%02x", (uint8)(evt->data.evt_le_gap_scan_response.address.addr[0]));
-				send_line(datas_line, 11);
-				snprintf(datas_line, 20, ":%02x", (uint8)(evt->data.evt_le_gap_scan_response.address.addr[1]));
-				send_line(datas_line, 4);
-				snprintf(datas_line, 20, ":%02x", (uint8)(evt->data.evt_le_gap_scan_response.address.addr[2]));
-				send_line(datas_line, 4);
-				snprintf(datas_line, 20, ":%02x", (uint8)(evt->data.evt_le_gap_scan_response.address.addr[3]));
-				send_line(datas_line, 4);
-				snprintf(datas_line, 20, ":%02x", (uint8)(evt->data.evt_le_gap_scan_response.address.addr[4]));
-				send_line(datas_line, 4);
-				snprintf(datas_line, 20, ":%02x", (uint8)(evt->data.evt_le_gap_scan_response.address.addr[5]));
-				send_line(datas_line, 4);
-				snprintf(datas_line, 20, "RSSI:%d\r\n", (int8)evt->data.evt_le_gap_scan_response.rssi);
-				send_line(datas_line, 11);
-				char* line = "------------------\r\n";
-				send_line(line, 20);
-			#endif
+				for (int i=0;i<99;i++) {
+					for (int j=0;j<7;j++) {
+						signals[i][j] = signals[i+1][j];
+					}
+				}
+				signals[99][0] = (uint8)(evt->data.evt_le_gap_scan_response.address.addr[0]);
+				signals[99][1] = (uint8)(evt->data.evt_le_gap_scan_response.address.addr[1]);
+				signals[99][2] = (uint8)(evt->data.evt_le_gap_scan_response.address.addr[2]);
+				signals[99][3] = (uint8)(evt->data.evt_le_gap_scan_response.address.addr[3]);
+				signals[99][4] = (uint8)(evt->data.evt_le_gap_scan_response.address.addr[4]);
+				signals[99][5] = (uint8)(evt->data.evt_le_gap_scan_response.address.addr[5]);
+				signals[99][6] = (uint8)evt->data.evt_le_gap_scan_response.rssi;
+
 				if ((associated == 0) && (process_scan_response(&(evt->data.evt_le_gap_scan_response)) > 0)) {
 					associated = 1;
 					struct gecko_msg_le_gap_open_rsp_t *pResp;
-
-					//gecko_cmd_le_gap_end_procedure(); // Match found -> stop discovery and try to connect
 					pResp = gecko_cmd_le_gap_open(evt->data.evt_le_gap_scan_response.address, evt->data.evt_le_gap_scan_response.address_type);
-
 					_conn_handle = pResp->connection; // Make copy of connection handle for later use
 				}
 				break;
@@ -342,9 +350,7 @@ int main(void) {
 			case gecko_evt_hardware_soft_timer_id:
 				switch (evt->data.evt_hardware_soft_timer.handle) {
 					case SPP_TX_TIMER:
-					#ifndef SHOW_RSSI_MODE
 						send_data();
-					#endif
 						break;
 
 					case RESTART_TIMER:
