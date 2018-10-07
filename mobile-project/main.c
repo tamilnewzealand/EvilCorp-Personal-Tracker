@@ -77,7 +77,7 @@ GyroscopeData_t gyro_data;
 int8_t temp_data_1;
 int8_t temp_data_2;
 
-uint8 signals[100][7] = {0};
+uint8 signals[100][2] = {0};
 
 /*
  * Resets Variables
@@ -153,25 +153,13 @@ void send_float(char* intro, float data) {
  * Runs every second, sends data to base station
  */
 void send_data() {
-	char* line;
-
-	line = "\r\n";
-	send_line(line, 2);
-	line = "==================\r\n";
-	send_line(line, 20);
-
-	line = "COMPSYS 704 - Grp7\r\n";
-	send_line(line, 20);
-	line = "------------------\r\n";
-	send_line(line, 20);
-
 	#ifdef SHOW_RSSI_MODE
 		char signal_line[20];
 		for (int i=0;i<10;i++) {
 			if (signals[i][6] != 0) {
-				snprintf(signal_line, 20, "%02x:%02x:%02x:%02x:%02x:%02x\r\n", signals[i][0], signals[i][1], signals[i][2], signals[i][3], signals[i][4], signals[i][5]);
+				snprintf(signal_line, 20, "B: %d\r\n", signals[i][0]);
 				send_line(signal_line, 20);
-				snprintf(signal_line, 20, "RSSI:%d\r\n", (int8)signals[i][6]);
+				snprintf(signal_line, 20, "RSSI:%d\r\n", (int8)signals[i][1]);
 				send_line(signal_line, 20);
 			}
 		}
@@ -182,26 +170,20 @@ void send_data() {
 		temp_data_1 = readTempFXAS21002();
 		temp_data_2 = readTempFXOS8700CQ();
 
-		send_float("Accel X: %.4f\r\n", (float)accel_data.x/SENSITIVITY_2G);
-		send_float("Accel Y: %.4f\r\n", (float)accel_data.y/SENSITIVITY_2G);
-		send_float("Accel Z: %.4f\r\n", (float)accel_data.z/SENSITIVITY_2G);
-		line = "------------------\r\n";
-		send_line(line, 20);
+		send_float("A X: %.4f\r\n", (float)accel_data.x/SENSITIVITY_2G);
+		send_float("A Y: %.4f\r\n", (float)accel_data.y/SENSITIVITY_2G);
+		send_float("A Z: %.4f\r\n", (float)accel_data.z/SENSITIVITY_2G);
 
-		send_float("Mag X: %.4f\r\n", (float)mag_data.x/SENSITIVITY_MAG);
-		send_float("Mag Y: %.4f\r\n", (float)mag_data.y/SENSITIVITY_MAG);
-		send_float("Mag Z: %.4f\r\n", (float)mag_data.z/SENSITIVITY_MAG);
-		line = "------------------\r\n";
-		send_line(line, 20);
+		send_float("M X: %.4f\r\n", (float)mag_data.x/SENSITIVITY_MAG);
+		send_float("M Y: %.4f\r\n", (float)mag_data.y/SENSITIVITY_MAG);
+		send_float("M Z: %.4f\r\n", (float)mag_data.z/SENSITIVITY_MAG);
 
-		send_float("Gyro R: %.4f\r\n", (float)gyro_data.x/SENSITIVITY_250);
-		send_float("Gyro P: %.4f\r\n", (float)gyro_data.y/SENSITIVITY_250);
-		send_float("Gyro Y: %.4f\r\n", (float)gyro_data.z/SENSITIVITY_250);
-		line = "------------------\r\n";
-		send_line(line, 20);
+		send_float("G R: %.4f\r\n", (float)gyro_data.x/SENSITIVITY_250);
+		send_float("G P: %.4f\r\n", (float)gyro_data.y/SENSITIVITY_250);
+		send_float("G Y: %.4f\r\n", (float)gyro_data.z/SENSITIVITY_250);
 
-		send_float("Temp 1: %.0f\r\n", (float) temp_data_1);
-		send_float("Temp 2: %.0f\r\n", (float) temp_data_2);
+		send_float("T 1: %.0f\r\n", (float) temp_data_1);
+		send_float("T 2: %.0f\r\n", (float) temp_data_2);
 	#endif
 }
 
@@ -219,7 +201,6 @@ int main(void) {
 
 	RETARGET_SerialInit();
 	associated = 0;
-	char datas_line[20];
 
 	printf("Starting Mobile Device\r\n");
 
@@ -227,7 +208,6 @@ int main(void) {
 	while (1) {
 		struct gecko_cmd_packet* evt; // Event pointer for handling events
 		evt = gecko_wait_event(); // Check for stack event
-		uint8 signal_strength = 0;
 
 		/* Handle events */
 		switch (BGLIB_MSG_ID(evt->header)) {
@@ -241,18 +221,15 @@ int main(void) {
 
 			// When responses received from discovery
 			case gecko_evt_le_gap_scan_response_id:
-				for (int i=0;i<99;i++) {
-					for (int j=0;j<7;j++) {
-						signals[i][j] = signals[i+1][j];
+				if (evt->data.evt_le_gap_scan_response.data.len >= 29) {
+					for (int i=0;i<99;i++) {
+						signals[i][0] = signals[i+1][0];
+						signals[i][1] = signals[i+1][1];
 					}
+					signals[99][0] = evt->data.evt_le_gap_scan_response.data.data[28];
+					signals[99][1] = (uint8)evt->data.evt_le_gap_scan_response.rssi;
 				}
-				signals[99][0] = (uint8)(evt->data.evt_le_gap_scan_response.address.addr[0]);
-				signals[99][1] = (uint8)(evt->data.evt_le_gap_scan_response.address.addr[1]);
-				signals[99][2] = (uint8)(evt->data.evt_le_gap_scan_response.address.addr[2]);
-				signals[99][3] = (uint8)(evt->data.evt_le_gap_scan_response.address.addr[3]);
-				signals[99][4] = (uint8)(evt->data.evt_le_gap_scan_response.address.addr[4]);
-				signals[99][5] = (uint8)(evt->data.evt_le_gap_scan_response.address.addr[5]);
-				signals[99][6] = (uint8)evt->data.evt_le_gap_scan_response.rssi;
+
 
 				if ((associated == 0) && (process_scan_response(&(evt->data.evt_le_gap_scan_response)) > 0)) {
 					associated = 1;
