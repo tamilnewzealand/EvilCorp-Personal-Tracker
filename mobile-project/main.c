@@ -17,6 +17,7 @@
 #include "Drivers/i2c.h"
 #include "Drivers/FXAS21002.h"
 #include "Drivers/FXOS8700CQ.h"
+#include "Algorithms/trilateration.h"
 
 #ifndef MAX_CONNECTIONS
 #define MAX_CONNECTIONS 4
@@ -51,7 +52,7 @@ static const gecko_configuration_t config = {
 #define ENABLE_NOTIF 	4
 #define DATA_MODE		5
 
-//#define SHOW_RSSI_MODE
+#define SHOW_RSSI_MODE
 
 // SPP service UUID: 2df1425f-32ca-4e67-aad2-3176631e6559
 const uint8 serviceUUID[16] = {0x59, 0x65, 0x1e, 0x63, 0x76, 0x31, 0xd2, 0xaa, 0x67, 0x4e, 0xca, 0x32, 0x5f, 0x42, 0xf1, 0x2d};
@@ -77,7 +78,8 @@ GyroscopeData_t gyro_data;
 int8_t temp_data_1;
 int8_t temp_data_2;
 
-uint8 signals[100][2] = {0};
+uint8 signals[20] = { 0 };
+uint8 temp_minor = 0;
 uint8 location[12] = { 0 };
 
 /*
@@ -160,19 +162,20 @@ void float2Bytes(uint8* bytes_temp[4], float float_variable){
  * Runs every second, sends data to base station
  */
 void send_data() {
-	/*
 	#ifdef SHOW_RSSI_MODE
-		char signal_line[20];
-		for (int i=0;i<10;i++) {
-			if (signals[i][1] != 0) {
-				snprintf(signal_line, 20, "B: %d\r\n", signals[i][0]);
-				send_line(signal_line, 20);
-				snprintf(signal_line, 20, "RSSI:%d\r\n", (int8)signals[i][1]);
-				send_line(signal_line, 20);
-			}
-		}
+		printf("Triangulation in process\r\n");
+		uint16 P1[3] = {0, 1568, 172};
+		uint16 P2[3] = {602, 1358, 265};
+		uint16 P3[3] = {0, 1235, 172};
+		float L[3] = {0.0, 0.0, 0.0};
+		float posi[3] = {0.0, 0.0, 0.0};
+		L[0] = powf(10.0, (((int8)signals[2] + 54.2) / (-10 * 2)));
+		L[1] = powf(10.0, (((int8)signals[7] + 54.2) / (-10 * 2)));
+		L[2] = powf(10.0, (((int8)signals[10] + 54.2) / (-10 * 2)));
+
+		trilaterate3(&P1, &P2, &P3, &L, &posi);
+		printf("Location is X:%.2f, Y:%.2f, Z:%.2f\r\n", posi[0], posi[1], posi[2]);
 	#else
-	*/
 		readAccel(&accel_data);
 		readMagn(&mag_data);
 		readGryo(&gyro_data);
@@ -197,7 +200,7 @@ void send_data() {
 		send_float("T 2: %.0f\r\n", (float) temp_data_2);
 		*/
 		gecko_cmd_gatt_write_characteristic_value_without_response(_conn_handle, _char_handle, 12, location)->result;
-	//#endif
+	#endif
 }
 
 /*
@@ -235,12 +238,12 @@ int main(void) {
 			// When responses received from discovery
 			case gecko_evt_le_gap_scan_response_id:
 				if (evt->data.evt_le_gap_scan_response.data.len >= 29) {
-					for (int i=0;i<99;i++) {
-						signals[i][0] = signals[i+1][0];
-						signals[i][1] = signals[i+1][1];
+					temp_minor = (uint8)evt->data.evt_le_gap_scan_response.data.data[28];
+					if (temp_minor < 15) {
+						signals[temp_minor - 5] = (uint8)evt->data.evt_le_gap_scan_response.rssi;
+					} else {
+						signals[temp_minor - 90] = (uint8)evt->data.evt_le_gap_scan_response.rssi;
 					}
-					signals[99][0] = evt->data.evt_le_gap_scan_response.data.data[28];
-					signals[99][1] = (uint8)evt->data.evt_le_gap_scan_response.rssi;
 				}
 
 				if ((associated == 0) && (process_scan_response(&(evt->data.evt_le_gap_scan_response)) > 0)) {
