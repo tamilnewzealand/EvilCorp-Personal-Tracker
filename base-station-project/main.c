@@ -68,7 +68,7 @@ static const gecko_configuration_t config = {
 /***************************************************************************************************
   Local Macros and Definitions
  **************************************************************************************************/
-#define SPP_TX_TIMER  2
+#define SPP_PRINT_TIMER  2
 
 #define STATE_ADVERTISING 1
 #define STATE_CONNECTED   2
@@ -91,7 +91,7 @@ static void reset_variables() {
 /*
  * Main loop
  */
-void main(void) {
+int main(void) {
 	initMcu(); // Initialize device
 	initBoard(); // Initialize board
 	initApp(); // Initialize Application
@@ -99,6 +99,9 @@ void main(void) {
 
 	RETARGET_SerialInit();
 	char printbuf[128];
+
+	gecko_cmd_hardware_set_soft_timer(32768, SPP_PRINT_TIMER, 0);
+	SLEEP_SleepBlockBegin(sleepEM2);
 
 	/* Bluetooth Main Loop */
 	while (1) {
@@ -142,9 +145,19 @@ void main(void) {
 
 			// Data Received from Mobile Device
 			case gecko_evt_gatt_server_attribute_value_id:
-				 memcpy(printbuf, evt->data.evt_gatt_server_attribute_value.value.data, evt->data.evt_gatt_server_attribute_value.value.len);
-				 printbuf[evt->data.evt_gatt_server_attribute_value.value.len] = 0;
-				 printf(printbuf);
+				memcpy(printbuf, evt->data.evt_gatt_server_attribute_value.value.data, evt->data.evt_gatt_server_attribute_value.value.len);
+				break;
+
+			// Timer event
+			case gecko_evt_hardware_soft_timer_id:
+				switch (evt->data.evt_hardware_soft_timer.handle) {
+					case SPP_PRINT_TIMER:
+						printf("%d, %d, %d, %d, %d, %d\r\n", printbuf[0], printbuf[1], printbuf[2], printbuf[3], printbuf[4], printbuf[5]);
+						break;
+
+					default:
+						break;
+				}
 				break;
 
 			default:

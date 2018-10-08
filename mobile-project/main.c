@@ -51,7 +51,7 @@ static const gecko_configuration_t config = {
 #define ENABLE_NOTIF 	4
 #define DATA_MODE		5
 
-#define SHOW_RSSI_MODE
+//#define SHOW_RSSI_MODE
 
 // SPP service UUID: 2df1425f-32ca-4e67-aad2-3176631e6559
 const uint8 serviceUUID[16] = {0x59, 0x65, 0x1e, 0x63, 0x76, 0x31, 0xd2, 0xaa, 0x67, 0x4e, 0xca, 0x32, 0x5f, 0x42, 0xf1, 0x2d};
@@ -78,6 +78,7 @@ int8_t temp_data_1;
 int8_t temp_data_2;
 
 uint8 signals[100][2] = {0};
+uint8 location[6] = {0, 0, 0, 0, 0, 0};
 
 /*
  * Resets Variables
@@ -127,6 +128,7 @@ static int process_scan_response(struct gecko_msg_le_gap_scan_response_evt_t *re
 /*
  * Sends a max 20 byte character array to the base station
  */
+/*
 static void send_line(char* data, uint8 len) {
 	uint16 result;
 
@@ -139,24 +141,30 @@ static void send_line(char* data, uint8 len) {
 		printf("ERROR: %x\r\n", result);
 	}
 }
-
+*/
 /*
  * Formats and sends a float
  */
+/*
 void send_float(char* intro, float data) {
 	char float_line[20];
 	snprintf(float_line, 20, intro, data);
 	send_line(float_line, 20);
 }
 
+void float2Bytes(uint8* bytes_temp[4], float float_variable){
+	memcpy(bytes_temp, (unsigned char*) (&float_variable), 4);
+}
+*/
 /*
  * Runs every second, sends data to base station
  */
 void send_data() {
+	/*
 	#ifdef SHOW_RSSI_MODE
 		char signal_line[20];
 		for (int i=0;i<10;i++) {
-			if (signals[i][6] != 0) {
+			if (signals[i][1] != 0) {
 				snprintf(signal_line, 20, "B: %d\r\n", signals[i][0]);
 				send_line(signal_line, 20);
 				snprintf(signal_line, 20, "RSSI:%d\r\n", (int8)signals[i][1]);
@@ -164,12 +172,15 @@ void send_data() {
 			}
 		}
 	#else
+	*/
 		readAccel(&accel_data);
 		readMagn(&mag_data);
 		readGryo(&gyro_data);
 		temp_data_1 = readTempFXAS21002();
 		temp_data_2 = readTempFXOS8700CQ();
 
+		location[0] += 1;
+/*
 		send_float("A X: %.4f\r\n", (float)accel_data.x/SENSITIVITY_2G);
 		send_float("A Y: %.4f\r\n", (float)accel_data.y/SENSITIVITY_2G);
 		send_float("A Z: %.4f\r\n", (float)accel_data.z/SENSITIVITY_2G);
@@ -184,7 +195,9 @@ void send_data() {
 
 		send_float("T 1: %.0f\r\n", (float) temp_data_1);
 		send_float("T 2: %.0f\r\n", (float) temp_data_2);
-	#endif
+		*/
+		gecko_cmd_gatt_write_characteristic_value_without_response(_conn_handle, _char_handle, 6, location)->result;
+	//#endif
 }
 
 /*
@@ -229,7 +242,6 @@ int main(void) {
 					signals[99][0] = evt->data.evt_le_gap_scan_response.data.data[28];
 					signals[99][1] = (uint8)evt->data.evt_le_gap_scan_response.rssi;
 				}
-
 
 				if ((associated == 0) && (process_scan_response(&(evt->data.evt_le_gap_scan_response)) > 0)) {
 					associated = 1;
