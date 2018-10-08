@@ -78,7 +78,7 @@ int8_t temp_data_1;
 int8_t temp_data_2;
 
 uint8 signals[100][2] = {0};
-uint8 location[6] = {0, 0, 0, 0, 0, 0};
+uint8 location[12] = { 0 };
 
 /*
  * Resets Variables
@@ -196,7 +196,7 @@ void send_data() {
 		send_float("T 1: %.0f\r\n", (float) temp_data_1);
 		send_float("T 2: %.0f\r\n", (float) temp_data_2);
 		*/
-		gecko_cmd_gatt_write_characteristic_value_without_response(_conn_handle, _char_handle, 6, location)->result;
+		gecko_cmd_gatt_write_characteristic_value_without_response(_conn_handle, _char_handle, 12, location)->result;
 	//#endif
 }
 
