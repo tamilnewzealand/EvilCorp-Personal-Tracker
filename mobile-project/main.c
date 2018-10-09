@@ -163,18 +163,20 @@ void float2Bytes(uint8* bytes_temp[4], float float_variable){
  */
 void send_data() {
 	#ifdef SHOW_RSSI_MODE
-		printf("Triangulation in process\r\n");
 		uint16 P1[3] = {0, 1568, 172};
 		uint16 P2[3] = {602, 1358, 265};
 		uint16 P3[3] = {0, 1235, 172};
 		float L[3] = {0.0, 0.0, 0.0};
-		float posi[3] = {0.0, 0.0, 0.0};
+		uint16 posi[3] = {0.0, 0.0, 0.0};
+
 		L[0] = powf(10.0, (((int8)signals[2] + 54.2) / (-10 * 2)));
 		L[1] = powf(10.0, (((int8)signals[7] + 54.2) / (-10 * 2)));
 		L[2] = powf(10.0, (((int8)signals[10] + 54.2) / (-10 * 2)));
 
 		trilaterate3(&P1, &P2, &P3, &L, &posi);
-		printf("Location is X:%.2f, Y:%.2f, Z:%.2f\r\n", posi[0], posi[1], posi[2]);
+		if ((posi[0] != 0) && (posi[1] != 0) && (posi[2] != 0)) {
+			printf("Location is X:%d, Y:%d, Z:%d\r\n", posi[2], posi[1], posi[0]);
+		}
 	#else
 		readAccel(&accel_data);
 		readMagn(&mag_data);

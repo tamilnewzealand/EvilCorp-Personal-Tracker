@@ -38,7 +38,6 @@ def serial_logger():
 
 _thread.start_new_thread(serial_logger, ())
 
-sleep(2)
 fig1 = plt.figure()
 
 data = np.random.rand(2, 1) * 100

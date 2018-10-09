@@ -14,16 +14,16 @@ uint8 trilaterate3(uint16 *P1, uint16 *P2, uint16 *P3, float *L, uint16 *posi)
     float y3 = (float)P3[1];
     float z3 = (float)P3[2];
 
-    float L1 = L[0];
-    float L2 = L[1];
-    float L3 = L[2];
+    float L1 = L[0]*100;
+    float L2 = L[1]*100;
+    float L3 = L[2]*100;
 
-    //caluculate coords in plane of stations
+    //calculate coords in plane of stations
     float LB1 = sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1) + (z2 - z1) * (z2 - z1));
     float LB2 = sqrt((x3 - x2) * (x3 - x2) + (y3 - y2) * (y3 - y2) + (z3 - z2) * (z3 - z2));
     float LB3 = sqrt((x1 - x3) * (x1 - x3) + (y1 - y3) * (y1 - y3) + (z1 - z3) * (z1 - z3));
 
-    float X = (L1*L1  - L2*L2  + LB1*LB1)/(2*LB1 );
+    float X = (L1*L1  - L2*L2  + LB1*LB1)/(2*LB1);
     float C1 = sqrt (L1*L1 - X*X);
     if (L1*L1 - X*X < 0) return 0;
     float XB = (LB3*LB3 - LB2*LB2 + LB1*LB1 )/(2*LB1 );
