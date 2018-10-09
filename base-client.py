@@ -35,18 +35,19 @@ plt.imshow(img)
 
 def update_line(num, dsa, line):
     global data
-
-    new_line = ser.readline()
-    new_line = new_line.decode("ascii")
-    coord = new_line.split(",")
-    coords=[[0], [0]]
-    coords[0][0] = int(coord[0])
-    coords[1][0] = int(coord[1])
-    new = np.asarray(coords)
-    print(new)
-    print("Current Location: X: " + str(new[0][0]) + ", Y: " + str(new[1][0]))
+    try:
+        new_line = ser.readline()
+        new_line = new_line.decode("ascii")
+        coord = new_line.split(",")
+        coords=[[0], [0]]
+        coords[0][0] = int(coord[0])
+        coords[1][0] = int(coord[1])
+        new = np.asarray(coords)        
+        print("Current Location: X: " + str(new[0][0]) + ", Y: " + str(new[1][0]))
+        data = np.append(data, new, 1)
+    except:
+        pass
     
-    data = np.append(data, new, 1)
     line.set_data(data[..., :num])
     return line,
 
