@@ -18,6 +18,7 @@
 #include "Drivers/FXAS21002.h"
 #include "Drivers/FXOS8700CQ.h"
 #include "Algorithms/trilateration.h"
+#include "Algorithms/sort.h"
 
 #ifndef MAX_CONNECTIONS
 #define MAX_CONNECTIONS 4
@@ -59,6 +60,8 @@ const uint8 serviceUUID[16] = {0x59, 0x65, 0x1e, 0x63, 0x76, 0x31, 0xd2, 0xaa, 0
 
 // SPP data UUID: dde0c840-7bc7-4a70-9c69-3295c2535cd9
 const uint8 charUUID[16] = {0xd9, 0x5c, 0x53, 0xc2, 0x95, 0x32, 0x69, 0x9c, 0x70, 0x4a, 0xc7, 0x7b, 0x40, 0xc8, 0xe0, 0xdd};
+
+uint16 referencePoints[20][3] = { { 750, 1796, 109 }, { 1057, 826, 163 }, { 0, 1568, 172 }, { 0, 935, 172 }, { 589, 285, 134 }, { 1057, 1460, 174 }, { 58, 0, 160 }, { 602, 1358, 265 }, { 602, 775, 265 }, { 73, 1900, 244 }, { 0, 1235, 172 }, { 602, 1075, 265 }, { 662, 645, 265 }, { 1057, 976, 163 }, { 328, 275, 200 }, { 0, 535, 172 }, { 770, 1596, 190 }, { 972, 1156, 265 }, { 1057, 485, 200 }, { 530, 1900, 244 } };
 
 #define RESTART_TIMER 1
 #define SPP_TX_TIMER  2
@@ -163,20 +166,57 @@ void float2Bytes(uint8* bytes_temp[4], float float_variable){
  */
 void send_data() {
 	#ifdef SHOW_RSSI_MODE
-		uint16 P1[3] = {0, 1568, 172};
-		uint16 P2[3] = {602, 1358, 265};
-		uint16 P3[3] = {0, 1235, 172};
-		float L[3] = {0.0, 0.0, 0.0};
-		uint16 posi[3] = {0.0, 0.0, 0.0};
+		int signalsCopy[20] = { 0 };
 
-		L[0] = powf(10.0, (((int8)signals[2] + 54.2) / (-10 * 2)));
-		L[1] = powf(10.0, (((int8)signals[7] + 54.2) / (-10 * 2)));
-		L[2] = powf(10.0, (((int8)signals[10] + 54.2) / (-10 * 2)));
-
-		trilaterate3(&P1, &P2, &P3, &L, &posi);
-		if ((posi[0] != 0) && (posi[1] != 0) && (posi[2] != 0)) {
-			printf("Location is X:%d, Y:%d, Z:%d\r\n", posi[2], posi[1], posi[0]);
+		uint8 i;
+		uint8 j;
+		uint8 k;
+		for (i = 0; i < 20; i++) {
+			signalsCopy[i] = signals[i];			
 		}
+		quickSort(signalsCopy, 0, 20);
+		float distances[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
+		float L[3] = {0.0, 0.0, 0.0};
+		uint16 posi[3] = { 0 };
+		uint32 sum_x = 0;
+		uint32 sum_y = 0;
+		uint8 count = 0;
+
+		uint16 fixedPoints[5][3] = { 0 };
+		for (i = 0; i < 5; i++) {
+			for (j = 0; j < 20; j++) {
+				if (signalsCopy[i] == signals[j]) {
+					fixedPoints[i][0] = referencePoints[j][0];
+					fixedPoints[i][1] = referencePoints[j][1];
+					fixedPoints[i][2] = referencePoints[j][2];
+					printf("Point %d, X: %d, Y: %d, Z: %d\r\n", i, fixedPoints[i][0], fixedPoints[i][1], fixedPoints[i][2]);
+					distances[i] = powf(10.0, (((int8)signals[j] + 54.2) / (-10 * 2)));
+				}
+			}
+		}		
+		for (i = 0; i < 5; i++) {
+			for (j = 0; j < 4; j++) {
+				for (k = 0; k < 3; k++) {
+					if ((fixedPoints[i][0] == fixedPoints[j][0]) && (fixedPoints[i][0] == fixedPoints[k][0])) continue;
+					if ((fixedPoints[i][1] == fixedPoints[j][1]) && (fixedPoints[i][1] == fixedPoints[k][1])) continue;
+					L[0] = distances[i];
+					L[1] = distances[j];
+					L[2] = distances[k];
+					trilaterate3(fixedPoints[i], fixedPoints[j], fixedPoints[k], L, posi);
+					if ((posi[0] != 0) && (posi[1] != 0)) {
+						sum_x += posi[0];
+						sum_y += posi[1];
+						count++;
+					}				
+				}
+			}
+		}
+
+		sum_x /= count;
+		sum_y /= count;
+		
+		printf("Location is X:%d, Y:%d Over: %d\r\n", (uint16)sum_x, (uint16)sum_y, count);
+
 	#else
 		readAccel(&accel_data);
 		readMagn(&mag_data);

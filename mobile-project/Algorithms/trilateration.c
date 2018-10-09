@@ -58,9 +58,9 @@ uint8 trilaterate3(uint16 *P1, uint16 *P2, uint16 *P3, float *L, uint16 *posi)
     float Zy = (Xz * Yx - Xx * Yz);
     float Zz = (Xx * Yy - Xy * Yx);
 
-    posi[0] = (uint16)(x1 + X * Xx + Y * Yx - Z * Zx);
+    posi[2] = (uint16)(x1 + X * Xx + Y * Yx - Z * Zx);
     posi[1] = (uint16)(y1 + X * Xy + Y * Yy - Z * Zy);
-    posi[2] = (uint16)(z1 + X * Xz + Y * Yz - Z * Zz);
+    posi[0] = (uint16)(z1 + X * Xz + Y * Yz - Z * Zz);
 
     return 1;
 }
