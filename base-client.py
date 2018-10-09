@@ -4,7 +4,6 @@ import sys
 import io
 import binascii
 import datetime
-import _thread
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -26,23 +25,28 @@ fig1 = plt.figure()
 
 data = np.random.rand(2, 1) * 100
 l, = plt.plot([], [], 'r-')
+plt.axis('image')
 plt.xlim(0, 1057)  
 plt.ylim(0, 1900)
 plt.xlabel('x')
 plt.title('EvilCorp Personal Tracker')
+img = plt.imread("background.png")
+plt.imshow(img)
 
 def update_line(num, dsa, line):
     global data
 
-    line = ser.readline()  
-    line = line.decode("ascii")    
-    coords = line.split(",")
-    coords[0] = int(coords[0])
-    coords[1] = int(coords[1])
+    new_line = ser.readline()
+    new_line = new_line.decode("ascii")
+    coord = new_line.split(",")
+    coords=[[0], [0]]
+    coords[0][0] = int(coord[0])
+    coords[1][0] = int(coord[1])
     new = np.asarray(coords)
-    data = np.append(data, new, 1)
+    print(new)
+    print("Current Location: X: " + str(new[0][0]) + ", Y: " + str(new[1][0]))
     
-    print("Current Location: X: " + str(new[0]) + ", Y: " + str(new[1]))
+    data = np.append(data, new, 1)
     line.set_data(data[..., :num])
     return line,
 
