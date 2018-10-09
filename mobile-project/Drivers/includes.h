@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include "retargetserial.h"
 #include "sleep.h"
+#include <stdlib.h>
 
 /* Libraries containing default Gecko configuration values */
 #include "em_emu.h"

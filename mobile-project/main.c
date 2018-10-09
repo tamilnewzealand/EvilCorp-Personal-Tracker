@@ -18,7 +18,6 @@
 #include "Drivers/FXAS21002.h"
 #include "Drivers/FXOS8700CQ.h"
 #include "Algorithms/trilateration.h"
-#include "Algorithms/sort.h"
 
 #ifndef MAX_CONNECTIONS
 #define MAX_CONNECTIONS 4
@@ -166,33 +165,46 @@ void float2Bytes(uint8* bytes_temp[4], float float_variable){
  */
 void send_data() {
 	#ifdef SHOW_RSSI_MODE
-		int signalsCopy[20] = { 0 };
+		int signalsCopy[20][2] = { 0 };
+		int signalsMoving[2] = { 0 };
 
 		uint8 i;
 		uint8 j;
 		uint8 k;
 		for (i = 0; i < 20; i++) {
-			signalsCopy[i] = signals[i];			
+			signalsCopy[i][0] = signals[i];
+			signalsCopy[i][1] = i;			
 		}
-		quickSort(signalsCopy, 0, 20);
+		
+		for (i = 0; i < 20; i++) {
+			for (j = 0; j < 20 - i; j++) {
+				if (signalsCopy[j][0] > signalsCopy[j+1][0]) {
+					signalsMoving[0] = signalsCopy[j][0];
+					signalsMoving[1] = signalsCopy[j][1];
+					signalsCopy[j][0] = signalsCopy[j+1][0];
+					signalsCopy[j][1] = signalsCopy[j+1][1];
+					signalsCopy[j+1][0] = signalsMoving[0];
+					signalsCopy[j+1][1] = signalsMoving[1];
+				} 
+			}
+		}
+
 		float distances[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
 		float L[3] = {0.0, 0.0, 0.0};
 		uint16 posi[3] = { 0 };
 		uint32 sum_x = 0;
 		uint32 sum_y = 0;
 		uint8 count = 0;
+		k = 0;
 
 		uint16 fixedPoints[5][3] = { 0 };
-		for (i = 0; i < 5; i++) {
-			for (j = 0; j < 20; j++) {
-				if (signalsCopy[i] == signals[j]) {
-					fixedPoints[i][0] = referencePoints[j][0];
-					fixedPoints[i][1] = referencePoints[j][1];
-					fixedPoints[i][2] = referencePoints[j][2];
-					printf("Point %d, X: %d, Y: %d, Z: %d\r\n", i, fixedPoints[i][0], fixedPoints[i][1], fixedPoints[i][2]);
-					distances[i] = powf(10.0, (((int8)signals[j] + 54.2) / (-10 * 2)));
-				}
-			}
+		for (i = 19; i > 14; i--) {
+			j = signalsCopy[i][1];
+			fixedPoints[k][0] = referencePoints[j][0];
+			fixedPoints[k][1] = referencePoints[j][1];
+			fixedPoints[k][2] = referencePoints[j][2];
+			distances[k] = powf(10.0, (((int8)signalsCopy[i][0] + 54.2) / (-10 * 2)));			
+			k++;
 		}		
 		for (i = 0; i < 5; i++) {
 			for (j = 0; j < 4; j++) {
@@ -215,7 +227,7 @@ void send_data() {
 		sum_x /= count;
 		sum_y /= count;
 		
-		printf("Location is X:%d, Y:%d Over: %d\r\n", (uint16)sum_x, (uint16)sum_y, count);
+		if (count > 0) printf("Location is X:%d, Y:%d Over: %d\r\n", (uint16)sum_x, (uint16)sum_y, count);
 
 	#else
 		readAccel(&accel_data);
