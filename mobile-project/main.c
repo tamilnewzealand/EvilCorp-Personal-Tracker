@@ -52,8 +52,6 @@ static const gecko_configuration_t config = {
 #define ENABLE_NOTIF 	4
 #define DATA_MODE		5
 
-#define SHOW_RSSI_MODE
-
 // SPP service UUID: 2df1425f-32ca-4e67-aad2-3176631e6559
 const uint8 serviceUUID[16] = {0x59, 0x65, 0x1e, 0x63, 0x76, 0x31, 0xd2, 0xaa, 0x67, 0x4e, 0xca, 0x32, 0x5f, 0x42, 0xf1, 0x2d};
 
@@ -164,97 +162,87 @@ void float2Bytes(uint8* bytes_temp[4], float float_variable){
  * Runs every second, sends data to base station
  */
 void send_data() {
-	#ifdef SHOW_RSSI_MODE
-		int signalsCopy[20][2] = { 0 };
-		int signalsMoving[2] = { 0 };
+	int signalsCopy[20][2] = { 0 };
+	int signalsMoving[2] = { 0 };
 
-		uint8 i;
-		uint8 j;
-		uint8 k;
-		for (i = 0; i < 20; i++) {
-			signalsCopy[i][0] = signals[i];
-			signalsCopy[i][1] = i;			
+	uint8 i;
+	uint8 j;
+	uint8 k;
+	for (i = 0; i < 20; i++) {
+		signalsCopy[i][0] = signals[i];
+		signalsCopy[i][1] = i;			
+	}
+	
+	for (i = 0; i < 20; i++) {
+		for (j = 0; j < 20 - i; j++) {
+			if (signalsCopy[j][0] > signalsCopy[j+1][0]) {
+				signalsMoving[0] = signalsCopy[j][0];
+				signalsMoving[1] = signalsCopy[j][1];
+				signalsCopy[j][0] = signalsCopy[j+1][0];
+				signalsCopy[j][1] = signalsCopy[j+1][1];
+				signalsCopy[j+1][0] = signalsMoving[0];
+				signalsCopy[j+1][1] = signalsMoving[1];
+			} 
 		}
-		
-		for (i = 0; i < 20; i++) {
-			for (j = 0; j < 20 - i; j++) {
-				if (signalsCopy[j][0] > signalsCopy[j+1][0]) {
-					signalsMoving[0] = signalsCopy[j][0];
-					signalsMoving[1] = signalsCopy[j][1];
-					signalsCopy[j][0] = signalsCopy[j+1][0];
-					signalsCopy[j][1] = signalsCopy[j+1][1];
-					signalsCopy[j+1][0] = signalsMoving[0];
-					signalsCopy[j+1][1] = signalsMoving[1];
-				} 
+	}
+
+	float distances[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
+	float L[3] = {0.0, 0.0, 0.0};
+	uint16 posi[3] = { 0 };
+	uint32 sum_x = 0;
+	uint32 sum_y = 0;
+	uint8 count = 0;
+	k = 0;
+
+	uint16 fixedPoints[5][3] = { 0 };
+	for (i = 19; i > 14; i--) {
+		j = signalsCopy[i][1];
+		fixedPoints[k][0] = referencePoints[j][0];
+		fixedPoints[k][1] = referencePoints[j][1];
+		fixedPoints[k][2] = referencePoints[j][2];
+		distances[k] = powf(10.0, (((int8)signalsCopy[i][0] + 54.2) / (-10 * 2)));			
+		k++;
+	}		
+	for (i = 0; i < 5; i++) {
+		for (j = 0; j < 4; j++) {
+			for (k = 0; k < 3; k++) {
+				if ((fixedPoints[i][0] == fixedPoints[j][0]) && (fixedPoints[i][0] == fixedPoints[k][0])) continue;
+				if ((fixedPoints[i][1] == fixedPoints[j][1]) && (fixedPoints[i][1] == fixedPoints[k][1])) continue;
+				L[0] = distances[i];
+				L[1] = distances[j];
+				L[2] = distances[k];
+				trilaterate3(fixedPoints[i], fixedPoints[j], fixedPoints[k], L, posi);
+				if ((posi[0] != 0) && (posi[1] != 0)) {
+					sum_x += posi[0];
+					sum_y += posi[1];
+					count++;
+				}				
 			}
 		}
+	}
 
-		float distances[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
-		float L[3] = {0.0, 0.0, 0.0};
-		uint16 posi[3] = { 0 };
-		uint32 sum_x = 0;
-		uint32 sum_y = 0;
-		uint8 count = 0;
-		k = 0;
+	sum_x /= count;
+	sum_y /= count;
+	
+	if (count > 0) {
+		printf("Location is X:%d, Y:%d Over: %d\r\n", (uint16)sum_x, (uint16)sum_y, count);
 
-		uint16 fixedPoints[5][3] = { 0 };
-		for (i = 19; i > 14; i--) {
-			j = signalsCopy[i][1];
-			fixedPoints[k][0] = referencePoints[j][0];
-			fixedPoints[k][1] = referencePoints[j][1];
-			fixedPoints[k][2] = referencePoints[j][2];
-			distances[k] = powf(10.0, (((int8)signalsCopy[i][0] + 54.2) / (-10 * 2)));			
-			k++;
-		}		
-		for (i = 0; i < 5; i++) {
-			for (j = 0; j < 4; j++) {
-				for (k = 0; k < 3; k++) {
-					if ((fixedPoints[i][0] == fixedPoints[j][0]) && (fixedPoints[i][0] == fixedPoints[k][0])) continue;
-					if ((fixedPoints[i][1] == fixedPoints[j][1]) && (fixedPoints[i][1] == fixedPoints[k][1])) continue;
-					L[0] = distances[i];
-					L[1] = distances[j];
-					L[2] = distances[k];
-					trilaterate3(fixedPoints[i], fixedPoints[j], fixedPoints[k], L, posi);
-					if ((posi[0] != 0) && (posi[1] != 0)) {
-						sum_x += posi[0];
-						sum_y += posi[1];
-						count++;
-					}				
-				}
-			}
-		}
+		location[0] = (uint8)(sum_x >> 8);
+		location[1] = (uint8)sum_x;
+		location[2] = (uint8)(sum_y >> 8);
+		location[3] = (uint8)sum_y;
 
-		sum_x /= count;
-		sum_y /= count;
-		
-		if (count > 0) printf("Location is X:%d, Y:%d Over: %d\r\n", (uint16)sum_x, (uint16)sum_y, count);
+		location[4] = (uint8)(sum_x >> 8);
+		location[5] = (uint8)sum_x;
+		location[6] = (uint8)(sum_y >> 8);
+		location[7] = (uint8)sum_y;
 
-	#else
-		readAccel(&accel_data);
-		readMagn(&mag_data);
-		readGryo(&gyro_data);
-		temp_data_1 = readTempFXAS21002();
-		temp_data_2 = readTempFXOS8700CQ();
-
-		location[0] += 1;
-/*
-		send_float("A X: %.4f\r\n", (float)accel_data.x/SENSITIVITY_2G);
-		send_float("A Y: %.4f\r\n", (float)accel_data.y/SENSITIVITY_2G);
-		send_float("A Z: %.4f\r\n", (float)accel_data.z/SENSITIVITY_2G);
-
-		send_float("M X: %.4f\r\n", (float)mag_data.x/SENSITIVITY_MAG);
-		send_float("M Y: %.4f\r\n", (float)mag_data.y/SENSITIVITY_MAG);
-		send_float("M Z: %.4f\r\n", (float)mag_data.z/SENSITIVITY_MAG);
-
-		send_float("G R: %.4f\r\n", (float)gyro_data.x/SENSITIVITY_250);
-		send_float("G P: %.4f\r\n", (float)gyro_data.y/SENSITIVITY_250);
-		send_float("G Y: %.4f\r\n", (float)gyro_data.z/SENSITIVITY_250);
-
-		send_float("T 1: %.0f\r\n", (float) temp_data_1);
-		send_float("T 2: %.0f\r\n", (float) temp_data_2);
-		*/
+		location[8] = (uint8)(sum_x >> 8);
+		location[9] = (uint8)sum_x;
+		location[10] = (uint8)(sum_y >> 8);
+		location[11] = (uint8)sum_y;
 		gecko_cmd_gatt_write_characteristic_value_without_response(_conn_handle, _char_handle, 12, location)->result;
-	#endif
+	}
 }
 
 /*

@@ -149,56 +149,27 @@ int main(void) {
 			// Data Received from Mobile Device
 			case gecko_evt_gatt_server_attribute_value_id:
 				memcpy(printbuf, evt->data.evt_gatt_server_attribute_value.value.data, evt->data.evt_gatt_server_attribute_value.value.len);
-/*
+				
 				location_temp[0] = ((uint16)printbuf[0] << 8) | printbuf[1];
 				location_temp[1] = ((uint16)printbuf[2] << 8) | printbuf[3];
 				location_temp[2] = ((uint16)printbuf[4] << 8) | printbuf[5];
 				location_temp[3] = ((uint16)printbuf[6] << 8) | printbuf[7];
 				location_temp[4] = ((uint16)printbuf[8] << 8) | printbuf[9];
 				location_temp[5] = ((uint16)printbuf[10] << 8) | printbuf[11];
-				printf("%d,%d,%d\r\n", location_temp[0], location_temp[1], location_temp[2]);
 
 				if ((location_temp[0] == location_temp[2]) && (location_temp[0] == location_temp[4])) {
 					if ((location_temp[1] == location_temp[3]) && (location_temp[1] == location_temp[5])) {
+						
 						last_known_location[0] = location_temp[0];
 						last_known_location[1] = location_temp[1];
 					}
-				}
-				*/
+				}				
 				break;
 
 			// Timer event
 			case gecko_evt_hardware_soft_timer_id:
 				switch (evt->data.evt_hardware_soft_timer.handle) {
 					case SPP_PRINT_TIMER:
-
-						printbuf[0] = 5;
-						printbuf[1] = 7;
-						printbuf[2] = 8;
-						printbuf[3] = 9;
-						printbuf[4] = 5;
-						printbuf[5] = 7;
-						printbuf[6] = 8;
-						printbuf[7] = 9;
-						printbuf[8] = 5;
-						printbuf[9] = 7;
-						printbuf[10] = 8;
-						printbuf[11] = 9;
-
-						location_temp[0] = ((uint16)printbuf[0] << 8) | printbuf[1];
-						location_temp[1] = ((uint16)printbuf[2] << 8) | printbuf[3];
-						location_temp[2] = ((uint16)printbuf[4] << 8) | printbuf[5];
-						location_temp[3] = ((uint16)printbuf[6] << 8) | printbuf[7];
-						location_temp[4] = ((uint16)printbuf[8] << 8) | printbuf[9];
-						location_temp[5] = ((uint16)printbuf[10] << 8) | printbuf[11];
-
-						if ((location_temp[0] == location_temp[2]) && (location_temp[0] == location_temp[4])) {
-							if ((location_temp[1] == location_temp[3]) && (location_temp[1] == location_temp[5])) {
-								last_known_location[0] = location_temp[0];
-								last_known_location[1] = location_temp[1];
-							}
-						}
-
 						printf("%d,%d\r\n", last_known_location[0], last_known_location[1]);
 						break;
 
