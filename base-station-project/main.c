@@ -83,6 +83,9 @@ static int _main_state;
 uint16 location_temp[6] = {0};
 uint16 last_known_location[2] = {0};
 
+uint16 orientation_temp[3] = {0};
+uint16 last_known_orientation = 0;
+
 /*
  * Resets Variables
  */
@@ -163,14 +166,23 @@ int main(void) {
 						last_known_location[0] = location_temp[0];
 						last_known_location[1] = location_temp[1];
 					}
-				}				
+				}
+
+				orientation_temp[0] = ((uint16)printbuf[12] << 8) | printbuf[13];
+				orientation_temp[1] = ((uint16)printbuf[14] << 8) | printbuf[15];
+				orientation_temp[2] = ((uint16)printbuf[16] << 8) | printbuf[17];
+
+				if ((orientation_temp[0] == orientation_temp[2]) && (orientation_temp[0] == orientation_temp[1])) {
+					last_known_orientation = orientation_temp[0];
+				}
+
 				break;
 
 			// Timer event
 			case gecko_evt_hardware_soft_timer_id:
 				switch (evt->data.evt_hardware_soft_timer.handle) {
 					case SPP_PRINT_TIMER:
-						printf("%d,%d\r\n", last_known_location[0], last_known_location[1]);
+						printf("%d,%d:%d\r\n", last_known_location[0], last_known_location[1], last_known_orientation);
 						break;
 
 					default:

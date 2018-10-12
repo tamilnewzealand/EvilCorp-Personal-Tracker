@@ -38,12 +38,13 @@ def update_line(num, dsa, line):
     try:
         new_line = ser.readline()
         new_line = new_line.decode("ascii")
-        coord = new_line.split(",")
+        new_data = new_line.split(":")
+        coord = new_data[0].split(",")
         coords=[[0], [0]]
         coords[0][0] = int(coord[0])
         coords[1][0] = int(coord[1])
         new = np.asarray(coords)        
-        print("Current Location: X: " + str(new[0][0]) + ", Y: " + str(new[1][0]))
+        print("Current Location: X: " + str(new[0][0]) + ", Y: " + str(new[1][0]) + ", Orientation: " + new_data[1].strip())
         data = np.append(data, new, 1)
     except:
         pass

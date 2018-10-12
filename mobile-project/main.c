@@ -78,9 +78,9 @@ GyroscopeData_t gyro_data;
 int8_t temp_data_1;
 int8_t temp_data_2;
 
-uint8 signals[20] = { 0 };
+uint8 signals[20] = {0};
 uint8 temp_minor = 0;
-uint8 location[12] = { 0 };
+uint8 location[18] = {0};
 
 /*
  * Resets Variables
@@ -127,37 +127,6 @@ static int process_scan_response(struct gecko_msg_le_gap_scan_response_evt_t *re
     return(address_match_found);
 }
 
-/*
- * Sends a max 20 byte character array to the base station
- */
-/*
-static void send_line(char* data, uint8 len) {
-	uint16 result;
-
-	// stack may return "out-of-memory" error if the local buffer is full -> in that case, just keep trying until the command succeeds
-	do {
-		result = gecko_cmd_gatt_write_characteristic_value_without_response(_conn_handle, _char_handle, len, data)->result;
-	} while (result == bg_err_out_of_memory);
-
-	if (result != 0) {
-		printf("ERROR: %x\r\n", result);
-	}
-}
-*/
-/*
- * Formats and sends a float
- */
-/*
-void send_float(char* intro, float data) {
-	char float_line[20];
-	snprintf(float_line, 20, intro, data);
-	send_line(float_line, 20);
-}
-
-void float2Bytes(uint8* bytes_temp[4], float float_variable){
-	memcpy(bytes_temp, (unsigned char*) (&float_variable), 4);
-}
-*/
 /*
  * Runs every second, sends data to base station
  */
@@ -224,6 +193,8 @@ void send_data() {
 	sum_x /= count;
 	sum_y /= count;
 	
+	uint16 orientation = 360;
+
 	if (count > 0) {
 		printf("Location is X:%d, Y:%d Over: %d\r\n", (uint16)sum_x, (uint16)sum_y, count);
 
@@ -241,7 +212,17 @@ void send_data() {
 		location[9] = (uint8)sum_x;
 		location[10] = (uint8)(sum_y >> 8);
 		location[11] = (uint8)sum_y;
-		gecko_cmd_gatt_write_characteristic_value_without_response(_conn_handle, _char_handle, 12, location)->result;
+
+		location[12] = (uint8)(orientation >> 8);
+		location[13] = (uint8)(orientation);
+
+		location[14] = (uint8)(orientation >> 8);
+		location[15] = (uint8)(orientation);
+
+		location[16] = (uint8)(orientation >> 8);
+		location[17] = (uint8)(orientation);
+
+		gecko_cmd_gatt_write_characteristic_value_without_response(_conn_handle, _char_handle, 18, location)->result;
 	}
 }
 
