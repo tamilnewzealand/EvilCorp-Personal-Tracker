@@ -52,6 +52,6 @@ def update_line(num, dsa, line):
     line.set_data(data[..., :num])
     return line,
 
-line_ani = animation.FuncAnimation(fig1, update_line, 25, fargs=(data, l),interval=1000, blit=True)
+line_ani = animation.FuncAnimation(fig1, update_line, 1000, fargs=(data, l),interval=1000, blit=True)
 
 plt.show()

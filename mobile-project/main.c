@@ -81,6 +81,7 @@ int8_t temp_data_2;
 uint8 signals[20] = {0};
 uint8 temp_minor = 0;
 uint8 location[18] = {0};
+uint32 coords_fifo[6] = {0};
 
 /*
  * Resets Variables
@@ -193,6 +194,16 @@ void send_data() {
 	sum_x /= count;
 	sum_y /= count;
 	
+	coords_fifo[5] = coords_fifo[3];
+	coords_fifo[4] = coords_fifo[2];
+	coords_fifo[3] = coords_fifo[1];
+	coords_fifo[2] = coords_fifo[0];
+	coords_fifo[0] = sum_x;
+	coords_fifo[1] = sum_y;
+
+	sum_x = (coords_fifo[0] + coords_fifo[2] + coords_fifo[4]) / 3;
+	sum_y = (coords_fifo[1] + coords_fifo[3] + coords_fifo[5]) / 3;
+
 	uint16 orientation = 360;
 
 	if (count > 0) {
@@ -267,6 +278,7 @@ int main(void) {
 					} else {
 						signals[temp_minor - 90] = (uint8)evt->data.evt_le_gap_scan_response.rssi;
 					}
+
 				}
 
 				if ((associated == 0) && (process_scan_response(&(evt->data.evt_le_gap_scan_response)) > 0)) {
