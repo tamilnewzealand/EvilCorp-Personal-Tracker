@@ -1,11 +1,10 @@
 #include "AHRS.h"
 
-#define sampleFreq	1.0f		// sample frequency in Hz
+#define sampleFreq	25.0f		// sample frequency in Hz
 
 volatile float beta = 0.1f;								// 2 * proportional gain (Kp)
 volatile float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// quaternion of sensor frame relative to auxiliary frame
 
-float invSampleFreq;
 float roll;
 float pitch;
 float yaw;
@@ -26,6 +25,11 @@ void AHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, floa
 		AHRSupdateIMU(gx, gy, gz, ax, ay, az);
 		return;
 	}
+
+	// Convert gyroscope degrees/sec to radians/sec
+	gx *= 0.0174533f;
+	gy *= 0.0174533f;
+	gz *= 0.0174533f;
 
 	// Rate of change of quaternion from gyroscope
 	qDot1 = 0.5f * (-q1 * gx - q2 * gy - q3 * gz);
@@ -118,6 +122,11 @@ void AHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az) {
 	float qDot1, qDot2, qDot3, qDot4;
 	float _2q0, _2q1, _2q2, _2q3, _4q0, _4q1, _4q2 ,_8q1, _8q2, q0q0, q1q1, q2q2, q3q3;
 
+	// Convert gyroscope degrees/sec to radians/sec
+	gx *= 0.0174533f;
+	gy *= 0.0174533f;
+	gz *= 0.0174533f;
+
 	// Rate of change of quaternion from gyroscope
 	qDot1 = 0.5f * (-q1 * gx - q2 * gy - q3 * gz);
 	qDot2 = 0.5f * (q0 * gx + q2 * gz - q3 * gy);
@@ -196,6 +205,7 @@ float invSqrt(float x) {
 
 void computeAngles()
 {
+	printf("Q0: %.6f, Q1: %.6f, Q2: %.6f, Q3: %.6f\r\n", q0, q1, q2, q3);
 	roll = atan2f(q0*q1 + q2*q3, 0.5f - q1*q1 - q2*q2);
 	pitch = asinf(-2.0f * (q1*q3 - q0*q2));
 	yaw = atan2f(q1*q2 + q0*q3, 0.5f - q2*q2 - q3*q3);
@@ -204,15 +214,15 @@ void computeAngles()
 
 float getRoll() {
         if (!computationDone) computeAngles();
-        return roll * 57.29578f;
+        return roll * 57.29578f * 1.8f;
 }
 
 float getPitch() {
     if (!computationDone) computeAngles();
-    return pitch * 57.29578f;
+    return pitch * 57.29578f * 1.8f;
 }
 
 float getYaw() {
     if (!computationDone) computeAngles();
-    return yaw * 57.29578f + 180.0f;
+    return yaw * 57.29578f * 1.8f;
 }
