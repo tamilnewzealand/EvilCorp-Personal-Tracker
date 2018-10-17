@@ -64,3 +64,150 @@ uint8 trilaterate3(uint16 *P1, uint16 *P2, uint16 *P3, float *L, uint16 *posi)
 
     return 1;
 }
+
+uint8 trilaterate4(uint16 *P1, uint16 *P2, uint16 *P3, uint16 *P4, float *L, uint16 *posi) {
+	double x1 = (double)P1[0];
+	double y1 = (double)P1[1];
+	double z1 = (double)P1[2];
+
+	double x2 = (double)P2[0];
+	double y2 = (double)P2[1];
+	double z2 = (double)P2[2];
+
+	double x3 = (double)P3[0];
+	double y3 = (double)P3[1];
+	double z3 = (double)P3[2];
+
+	double x4 = (double)P4[0];
+	double y4 = (double)P4[1];
+	double z4 = (double)P4[2];
+
+	double L1 = L[0]*100;
+	double L2 = L[1]*100;
+	double L3 = L[2]*100;
+	double L4 = L[3]*100;
+
+	double A1 = 2*(x4-x1);
+	double A2 = 2*(y4-y1);
+	double A3 = 2*(z4-z1);		// |-	     -|
+	double A4 = 2*(x4-x2);		// | A1	A2 A3 |
+	double A5 = 2*(y4-y2);		// | A4	A5 A6 |
+	double A6 = 2*(z4-z2);		// | A7	A8 A9 |
+	double A7 = 2*(x4-x3);		// |-        -|
+	double A8 = 2*(y4-y3);
+	double A9 = 2*(z4-z3);
+																					// |-  -|
+	double B1 = L1*L1 - L4*L4 - x1*x1 - y1*y1 - z1*z1 + x4*x4 + y4*y4 + z4*z4;		// | B1 |
+	double B2 = L2*L2 - L4*L4 - x2*x2 - y2*y2 - z2*z2 + x4*x4 + y4*y4 + z4*z4;		// | B2 |
+	double B3 = L3*L3 - L4*L4 - x3*x3 - y3*y3 - z3*z3 + x4*x4 + y4*y4 + z4*z4;		// | B3 |
+																					// |-  -|
+
+	B1 = L1*L1 - L4*L4 - x1*x1 - y1*y1 + x4*x4 + y4*y4;
+	B2 = L2*L2 - L4*L4 - x2*x2 - y2*y2 + x4*x4 + y4*y4;
+	B3 = L3*L3 - L4*L4 - x3*x3 - y3*y3 + x4*x4 + y4*y4;
+
+	// C = trans(A)*A
+	double C1 = A1*A1 + A2*A2 + A3*A3;
+	double C2 = A1*A4 + A2*A5 + A3*A6;
+	double C3 = A1*A7 + A2*A8 + A3*A9;
+	double C4 = A4*A1 + A5*A2 + A6*A3;
+	double C5 = A4*A4 + A5*A5 + A6*A6;
+	double C6 = A4*A7 + A5*A8 + A6*A9;
+	double C7 = A7*A1 + A8*A2 + A9*A3;
+	double C8 = A7*A4 + A8*A5 + A9*A6;
+	double C9 = A7*A7 + A8*A8 + A9*A9;
+
+	// D = trans(A)*B
+	double D1 = A1*B1 + A4*B2 + A7*B3;
+	double D2 = A2*B1 + A5*B2 + A8*B3;
+	double D3 = A3*B1 + A6*B2 + A9*B3;
+
+	// E = inv(C)
+	double det = C1*(C5*C9 - C8*C6) - C2*(C4*C9 - C6*C7) + C3*(C4*C8 - C5*C7);
+	if (det == 0) {
+		return 0;
+	}
+	double invdet = 1 / det;
+
+	double E1 = (C5*C9 - C8*C6) * invdet;
+	double E2 = (C3*C8 - C2*C9) * invdet;
+	double E3 = (C2*C6 - C3*C5) * invdet;
+	double E4 = (C6*C7 - C4*C9) * invdet;
+	double E5 = (C1*C9 - C3*C7) * invdet;
+	double E6 = (C4*C3 - C1*C6) * invdet;
+	double E7 = (C4*C8 - C7*C5) * invdet;
+	double E8 = (C7*C2 - C1*C8) * invdet;
+	double E9 = (C1*C5 - C4*C2) * invdet;
+
+	// posi = E*D
+	posi[0] = (uint16)(E1*D1 + E2*D2 + E3*D3);
+	posi[1] = (uint16)(E4*D1 + E5*D2 + E6*D3);
+	posi[2] = (uint16)(E7*D1 + E8*D2 + E9+D3);
+
+	printf("Location is X:%f, Y:%f Z:%f\r\n", (E1*D1 + E2*D2 + E3*D3), (E4*D1 + E5*D2 + E6*D3), (E7*D1 + E8*D2 + E9+D3));
+
+	return 1;
+}
+
+uint8 trilaterate4_2(uint16 *P1, uint16 *P2, uint16 *P3, uint16 *P4, float *L, uint16 *posi) {
+	double x1 = (double)P1[0];
+	double y1 = (double)P1[1];
+	double z1 = (double)P1[2];
+
+	double x2 = (double)P2[0];
+	double y2 = (double)P2[1];
+	double z2 = (double)P2[2];
+
+	double x3 = (double)P3[0];
+	double y3 = (double)P3[1];
+	double z3 = (double)P3[2];
+
+	double x4 = (double)P4[0];
+	double y4 = (double)P4[1];
+	double z4 = (double)P4[2];
+
+	double L1 = L[0]*100;
+	double L2 = L[1]*100;
+	double L3 = L[2]*100;
+	double L4 = L[3]*100;
+
+	double A1 = (L1*L1 - L2*L2) - (x1*x1 - x2*x2) - (y1*y1 - y2*y2) - (z1*z1 - z2*z2);
+	double A2 = 2*(y2-y1);
+	double A3 = 2*(z2-z1);
+	double A4 = (L1*L1 - L3*L3) - (x1*x1 - x3*x3) - (y1*y1 - y3*y3) - (z1*z1 - z3*z3);
+	double A5 = 2*(y3-y1);
+	double A6 = 2*(z3-z1);
+	double A7 = (L1*L1 - L4*L4) - (x1*x1 - x4*x4) - (y1*y1 - y4*y4) - (z1*z1 - z4*z4);
+	double A8 = 2*(y4-y1);
+	double A9 = 2*(z4-z1);
+	double detA = A1*(A5*A9 - A8*A6) - A2*(A4*A9 - A6*A7) + A3*(A4*A8 - A5*A7);
+
+	double B1 = 2*(x2-x1);
+	double B2 = 2*(y2-y1);
+	double B3 = 2*(z2-z1);
+	double B4 = 2*(x3-x1);
+	double B5 = 2*(y3-y1);
+	double B6 = 2*(z3-z1);
+	double B7 = 2*(x4-x1);
+	double B8 = 2*(y4-y1);
+	double B9 = 2*(z4-z1);
+	double detB = B1*(B5*B9 - B8*B6) - B2*(B4*B9 - B6*B7) + B3*(B4*B8 - B5*B7);
+
+	double C2 = (L1*L1 - L2*L2) - (x1*x1 - x2*x2) - (y1*y1 - y2*y2) - (z1*z1 - z2*z2);
+	double C1 = 2*(x2-x1);
+	double C3 = 2*(z2-z1);
+	double C5 = (L1*L1 - L3*L3) - (x1*x1 - x3*x3) - (y1*y1 - y3*y3) - (z1*z1 - z3*z3);
+	double C4 = 2*(x3-x1);
+	double C6 = 2*(z3-z1);
+	double C8 = (L1*L1 - L4*L4) - (x1*x1 - x4*x4) - (y1*y1 - y4*y4) - (z1*z1 - z4*z4);
+	double C7 = 2*(x4-x1);
+	double C9 = 2*(z4-z1);
+	double detC = C1*(C5*C9 - C8*C6) - C2*(C4*C9 - C6*C7) + C3*(C4*C8 - C5*C7);
+
+	if (detA/detB > 0 && detA/detB < 1100 && detC/detB > 0 && detC/detB < 2000) {
+		posi[0] = (uint16)(detA/detB);
+		posi[1] = (uint16)(detC/detB);
+	}
+
+	return 1;
+}

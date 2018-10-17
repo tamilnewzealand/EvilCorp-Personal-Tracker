@@ -72,6 +72,7 @@
 									<listOptionValue builtIn="false" value="__HEAP_SIZE=0xD00"/>
 									<listOptionValue builtIn="false" value="__STACK_SIZE=0x800"/>
 								</option>
+								<option id="gnu.c.compiler.option.optimization.level.921044986" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" value="gnu.c.optimization.level.none" valueType="enumerated"/>
 								<inputType id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.compiler.input.416667799" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.cpp.compiler.base.770685542" name="GNU ARM C++ Compiler" superClass="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.cpp.compiler.base"/>

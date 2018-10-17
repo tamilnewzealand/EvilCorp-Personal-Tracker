@@ -138,6 +138,7 @@ void send_data() {
 	uint8 i;
 	uint8 j;
 	uint8 k;
+	uint8 l;
 	for (i = 0; i < 20; i++) {
 		signalsCopy[i][0] = signals[i];
 		signalsCopy[i][1] = i;			
@@ -157,7 +158,7 @@ void send_data() {
 	}
 
 	float distances[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
-	float L[3] = {0.0, 0.0, 0.0};
+	float L[4] = {0.0, 0.0, 0.0, 0.0};
 	uint16 posi[3] = { 0 };
 	uint32 sum_x = 0;
 	uint32 sum_y = 0;
@@ -176,37 +177,48 @@ void send_data() {
 	for (i = 0; i < 5; i++) {
 		for (j = 0; j < 4; j++) {
 			for (k = 0; k < 3; k++) {
-				if ((fixedPoints[i][0] == fixedPoints[j][0]) && (fixedPoints[i][0] == fixedPoints[k][0])) continue;
-				if ((fixedPoints[i][1] == fixedPoints[j][1]) && (fixedPoints[i][1] == fixedPoints[k][1])) continue;
-				L[0] = distances[i];
-				L[1] = distances[j];
-				L[2] = distances[k];
-				trilaterate3(fixedPoints[i], fixedPoints[j], fixedPoints[k], L, posi);
-				if ((posi[0] != 0) && (posi[1] != 0)) {
-					sum_x += posi[0];
-					sum_y += posi[1];
-					count++;
-				}				
+				for (l = 0; l < 2; l++) {
+					if ((fixedPoints[i][0] == fixedPoints[j][0]) && (fixedPoints[i][1] == fixedPoints[j][1])) continue;
+					if ((fixedPoints[i][0] == fixedPoints[k][0]) && (fixedPoints[i][1] == fixedPoints[k][1])) continue;
+					if ((fixedPoints[i][0] == fixedPoints[l][0]) && (fixedPoints[i][1] == fixedPoints[l][1])) continue;
+
+					if ((fixedPoints[j][0] == fixedPoints[k][0]) && (fixedPoints[j][1] == fixedPoints[k][1])) continue;
+					if ((fixedPoints[j][0] == fixedPoints[l][0]) && (fixedPoints[j][1] == fixedPoints[l][1])) continue;
+
+					if ((fixedPoints[k][0] == fixedPoints[l][0]) && (fixedPoints[k][1] == fixedPoints[l][1])) continue;
+
+					L[0] = distances[i];
+					L[1] = distances[j];
+					L[2] = distances[k];
+					L[3] = distances[l];
+					trilaterate4(fixedPoints[i], fixedPoints[j], fixedPoints[k], fixedPoints[l], L, posi);
+
+					if ((posi[0] != 0) && (posi[1] != 0)) {
+						sum_x += posi[0];
+						sum_y += posi[1];
+						count++;
+					}
+				}
 			}
 		}
 	}
 
 	sum_x /= count;
 	sum_y /= count;
-	
-	coords_fifo[5] = coords_fifo[3];
-	coords_fifo[4] = coords_fifo[2];
-	coords_fifo[3] = coords_fifo[1];
-	coords_fifo[2] = coords_fifo[0];
-	coords_fifo[0] = sum_x;
-	coords_fifo[1] = sum_y;
-
-	sum_x = (coords_fifo[0] + coords_fifo[2] + coords_fifo[4]) / 3;
-	sum_y = (coords_fifo[1] + coords_fifo[3] + coords_fifo[5]) / 3;
 
 	uint16 orientation = 360;
 
 	if (count > 0) {
+		coords_fifo[5] = coords_fifo[3];
+		coords_fifo[4] = coords_fifo[2];
+		coords_fifo[3] = coords_fifo[1];
+		coords_fifo[2] = coords_fifo[0];
+		coords_fifo[0] = sum_x;
+		coords_fifo[1] = sum_y;
+
+		sum_x = (coords_fifo[0] + coords_fifo[2] + coords_fifo[4]) / 3;
+		sum_y = (coords_fifo[1] + coords_fifo[3] + coords_fifo[5]) / 3;
+
 		printf("Location is X:%d, Y:%d Over: %d\r\n", (uint16)sum_x, (uint16)sum_y, count);
 
 		location[0] = (uint8)(sum_x >> 8);
@@ -240,7 +252,7 @@ void send_data() {
 /*
  * Main loop
  */
-int main(void) {
+	int main(void) {
 	initMcu(); // Initialize device
 	initBoard(); // Initialize board
 	initApp(); // Initialize application
