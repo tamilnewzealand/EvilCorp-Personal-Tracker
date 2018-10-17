@@ -18,6 +18,7 @@
 #include "Drivers/FXAS21002.h"
 #include "Drivers/FXOS8700CQ.h"
 #include "Algorithms/trilateration.h"
+#include "Algorithms/AHRS.h"
 
 #ifndef MAX_CONNECTIONS
 #define MAX_CONNECTIONS 4
@@ -75,8 +76,11 @@ static uint8 associated;
 AccelerometerData_t accel_data;
 MagnetometerData_t mag_data;
 GyroscopeData_t gyro_data;
+
+float ax, ay, az, gx, gy, gz, heading;
 int8_t temp_data_1;
 int8_t temp_data_2;
+int16 orientation;
 
 uint8 signals[20] = {0};
 uint8 temp_minor = 0;
@@ -206,7 +210,23 @@ void send_data() {
 	sum_x /= count;
 	sum_y /= count;
 
-	uint16 orientation = 360;
+	if (readAccel(&accel_data)) {
+		if (readGryo(&gyro_data)) {
+			ax = accel_data.x/SENSITIVITY_2G;
+			ay = accel_data.y/SENSITIVITY_2G;
+			az = accel_data.z/SENSITIVITY_2G;
+			if (ax > 2.000) ax -= 4.000;
+			if (ay > 2.000) ay -= 4.000;
+			if (az > 2.000) az -= 4.000;
+
+			gx = gyro_data.x/SENSITIVITY_250;
+			gy = gyro_data.y/SENSITIVITY_250;
+			gz = gyro_data.z/SENSITIVITY_250;
+
+			AHRSupdateIMU(gx, gy, gz, ax, ay, az);
+			orientation = (int16)getYaw();
+		}
+	}
 
 	if (count > 0) {
 		coords_fifo[5] = coords_fifo[3];
@@ -219,7 +239,7 @@ void send_data() {
 		sum_x = (coords_fifo[0] + coords_fifo[2] + coords_fifo[4]) / 3;
 		sum_y = (coords_fifo[1] + coords_fifo[3] + coords_fifo[5]) / 3;
 
-		printf("Location is X:%d, Y:%d Over: %d\r\n", (uint16)sum_x, (uint16)sum_y, count);
+		printf("Location is X:%d, Y:%d Over: %d, Heading: %d\r\n", (uint16)sum_x, (uint16)sum_y, count, orientation);
 
 		location[0] = (uint8)(sum_x >> 8);
 		location[1] = (uint8)sum_x;
@@ -258,7 +278,7 @@ void send_data() {
 	initApp(); // Initialize application
 	gecko_init(&config); // Initialize stack
 
-	if (!initFXOS8700CQ()) while (1); // Initialize Temperature Sensors
+	if (!initFXOS8700CQ()) while (1);
 	if (!initFXAS21002()) while (1);
 
 	RETARGET_SerialInit();

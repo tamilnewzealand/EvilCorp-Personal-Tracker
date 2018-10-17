@@ -7,7 +7,7 @@ uint8_t magOSR;
 bool initFXOS8700CQ()
 {
 	accelFSR = AFS_2g;     	// Set the scale below either 2, 4 or 8
-	accelODR = AODR_200HZ; 	// In hybrid mode, accel/mag data sample rates are half of this value
+	accelODR = AODR_50HZ; 	// In hybrid mode, accel/mag data sample rates are half of this value
 	magOSR = MOSR_5;     	// Choose magnetometer oversample rate
 
 	// initialize I2C if not already

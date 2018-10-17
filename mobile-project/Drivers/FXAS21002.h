@@ -28,10 +28,10 @@
 #define FXAS21002_CTRL_REG2	    0x14
 #define FXAS21002_CTRL_REG3	    0x15
 
-#define SENSITIVITY_2000		16
-#define SENSITIVITY_1000		32
-#define SENSITIVITY_500		  	64
-#define SENSITIVITY_250		  	128
+#define SENSITIVITY_2000		16.0f
+#define SENSITIVITY_1000		32.0f
+#define SENSITIVITY_500		  	64.0f
+#define SENSITIVITY_250		  	128.0f
 
 typedef struct
 {
