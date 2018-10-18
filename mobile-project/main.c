@@ -59,7 +59,7 @@ const uint8 serviceUUID[16] = {0x59, 0x65, 0x1e, 0x63, 0x76, 0x31, 0xd2, 0xaa, 0
 // SPP data UUID: dde0c840-7bc7-4a70-9c69-3295c2535cd9
 const uint8 charUUID[16] = {0xd9, 0x5c, 0x53, 0xc2, 0x95, 0x32, 0x69, 0x9c, 0x70, 0x4a, 0xc7, 0x7b, 0x40, 0xc8, 0xe0, 0xdd};
 
-uint16 referencePoints[20][3] = { { 750, 1796, 109 }, { 1057, 826, 163 }, { 0, 1568, 172 }, { 0, 935, 172 }, { 589, 285, 134 }, { 1057, 1460, 174 }, { 58, 0, 160 }, { 602, 1358, 265 }, { 602, 775, 265 }, { 73, 1900, 244 }, { 0, 1235, 172 }, { 602, 1075, 265 }, { 662, 645, 265 }, { 1057, 976, 163 }, { 328, 275, 200 }, { 0, 535, 172 }, { 770, 1596, 190 }, { 972, 1156, 265 }, { 1057, 485, 200 }, { 530, 1900, 244 } };
+uint16 referencePoints[20][4] = {{750, 1796, 109, 59}, {1057, 826, 163, 55}, {0, 1568, 172, 53}, {0, 935, 172, 72}, {589, 285, 134, 52}, {1057, 1460, 174, 72}, {58, 0, 160, 62}, {602, 1358, 265, 54}, {602, 775, 265, 49}, {73, 1900, 244, 43}, {0, 1235, 172, 54}, {602, 1075, 265, 58}, {662, 645, 265, 60}, {1057, 976, 163, 72}, {328, 275, 200, 59}, {0, 535, 172, 79}, {770, 1596, 190, 59}, {972, 1156, 265, 49}, {1057, 485, 200, 57}, {530, 1900, 244, 56}};
 
 #define RESTART_TIMER 1
 #define SPP_TX_TIMER  2
@@ -237,7 +237,7 @@ void find_poisitions() {
 		fixedPoints[k][0] = referencePoints[j][0];
 		fixedPoints[k][1] = referencePoints[j][1];
 		fixedPoints[k][2] = referencePoints[j][2];
-		distances[k] = 2*powf(10.0, (((int8)signalsCopy[i][0] + 54.2) / (-10 * 2)));
+		distances[k] = powf(10.0, ((float)((int8)signalsCopy[i][0] + (uint8)referencePoints[j][3]) / (-10 * 2)));
 		if (distances[k] < 0.5f) {
 			printf("Fingerprinting\r\n");
 			send_data(fixedPoints[k][0], fixedPoints[k][1]);
