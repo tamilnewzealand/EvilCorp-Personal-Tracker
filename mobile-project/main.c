@@ -63,6 +63,7 @@ uint16 referencePoints[20][3] = { { 750, 1796, 109 }, { 1057, 826, 163 }, { 0, 1
 
 #define RESTART_TIMER 1
 #define SPP_TX_TIMER  2
+#define AHRS_TIMER    3
 
 /***************************************************************************************************
  Local Variables
@@ -132,84 +133,7 @@ static int process_scan_response(struct gecko_msg_le_gap_scan_response_evt_t *re
     return(address_match_found);
 }
 
-/*
- * Runs every second, sends data to base station
- */
-void send_data() {
-	int signalsCopy[20][2] = { 0 };
-	int signalsMoving[2] = { 0 };
-
-	uint8 i;
-	uint8 j;
-	uint8 k;
-	uint8 l;
-	for (i = 0; i < 20; i++) {
-		signalsCopy[i][0] = signals[i];
-		signalsCopy[i][1] = i;			
-	}
-	
-	for (i = 0; i < 20; i++) {
-		for (j = 0; j < 20 - i; j++) {
-			if (signalsCopy[j][0] > signalsCopy[j+1][0]) {
-				signalsMoving[0] = signalsCopy[j][0];
-				signalsMoving[1] = signalsCopy[j][1];
-				signalsCopy[j][0] = signalsCopy[j+1][0];
-				signalsCopy[j][1] = signalsCopy[j+1][1];
-				signalsCopy[j+1][0] = signalsMoving[0];
-				signalsCopy[j+1][1] = signalsMoving[1];
-			} 
-		}
-	}
-
-	float distances[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
-	float L[4] = {0.0, 0.0, 0.0, 0.0};
-	uint16 posi[3] = { 0 };
-	uint32 sum_x = 0;
-	uint32 sum_y = 0;
-	uint8 count = 0;
-	k = 0;
-
-	uint16 fixedPoints[5][3] = { 0 };
-	for (i = 19; i > 14; i--) {
-		j = signalsCopy[i][1];
-		fixedPoints[k][0] = referencePoints[j][0];
-		fixedPoints[k][1] = referencePoints[j][1];
-		fixedPoints[k][2] = referencePoints[j][2];
-		distances[k] = powf(10.0, (((int8)signalsCopy[i][0] + 54.2) / (-10 * 2)));			
-		k++;
-	}		
-	for (i = 0; i < 5; i++) {
-		for (j = 0; j < 4; j++) {
-			for (k = 0; k < 3; k++) {
-				for (l = 0; l < 2; l++) {
-					if ((fixedPoints[i][0] == fixedPoints[j][0]) && (fixedPoints[i][1] == fixedPoints[j][1])) continue;
-					if ((fixedPoints[i][0] == fixedPoints[k][0]) && (fixedPoints[i][1] == fixedPoints[k][1])) continue;
-					if ((fixedPoints[i][0] == fixedPoints[l][0]) && (fixedPoints[i][1] == fixedPoints[l][1])) continue;
-
-					if ((fixedPoints[j][0] == fixedPoints[k][0]) && (fixedPoints[j][1] == fixedPoints[k][1])) continue;
-					if ((fixedPoints[j][0] == fixedPoints[l][0]) && (fixedPoints[j][1] == fixedPoints[l][1])) continue;
-
-					if ((fixedPoints[k][0] == fixedPoints[l][0]) && (fixedPoints[k][1] == fixedPoints[l][1])) continue;
-
-					L[0] = distances[i];
-					L[1] = distances[j];
-					L[2] = distances[k];
-					L[3] = distances[l];
-					trilaterate4(fixedPoints[i], fixedPoints[j], fixedPoints[k], fixedPoints[l], L, posi);
-
-					if ((posi[0] != 0) && (posi[1] != 0)) {
-						sum_x += posi[0];
-						sum_y += posi[1];
-						count++;
-					}
-				}
-			}
-		}
-	}
-
-	sum_x /= count;
-	sum_y /= count;
-
+void get_heading() {
 	if (readAccel(&accel_data)) {
 		if (readGryo(&gyro_data)) {
 			ax = accel_data.x/SENSITIVITY_2G;
@@ -227,6 +151,73 @@ void send_data() {
 			orientation = (int16)getYaw();
 		}
 	}
+}
+
+/*
+ * Runs every second, sends data to base station
+ */
+void send_data() {
+	int signalsCopy[20][2] = { 0 };
+	int signalsMoving[2] = { 0 };
+
+	uint8 i;
+	uint8 j;
+	uint8 k;
+	for (i = 0; i < 20; i++) {
+		signalsCopy[i][0] = signals[i];
+		signalsCopy[i][1] = i;
+	}
+
+	for (i = 0; i < 20; i++) {
+		for (j = 0; j < 20 - i; j++) {
+			if (signalsCopy[j][0] > signalsCopy[j+1][0]) {
+				signalsMoving[0] = signalsCopy[j][0];
+				signalsMoving[1] = signalsCopy[j][1];
+				signalsCopy[j][0] = signalsCopy[j+1][0];
+				signalsCopy[j][1] = signalsCopy[j+1][1];
+				signalsCopy[j+1][0] = signalsMoving[0];
+				signalsCopy[j+1][1] = signalsMoving[1];
+			}
+		}
+	}
+
+	float distances[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
+	float L[3] = {0.0, 0.0, 0.0};
+	uint16 posi[3] = { 0 };
+	uint32 sum_x = 0;
+	uint32 sum_y = 0;
+	uint8 count = 0;
+	k = 0;
+
+	uint16 fixedPoints[5][3] = { 0 };
+	for (i = 19; i > 14; i--) {
+		j = signalsCopy[i][1];
+		fixedPoints[k][0] = referencePoints[j][0];
+		fixedPoints[k][1] = referencePoints[j][1];
+		fixedPoints[k][2] = referencePoints[j][2];
+		distances[k] = powf(10.0, (((int8)signalsCopy[i][0] + 54.2) / (-10 * 2)));
+		k++;
+	}
+	for (i = 0; i < 5; i++) {
+		for (j = 0; j < 4; j++) {
+			for (k = 0; k < 3; k++) {
+				if ((fixedPoints[i][0] == fixedPoints[j][0]) && (fixedPoints[i][0] == fixedPoints[k][0])) continue;
+				if ((fixedPoints[i][1] == fixedPoints[j][1]) && (fixedPoints[i][1] == fixedPoints[k][1])) continue;
+				L[0] = distances[i];
+				L[1] = distances[j];
+				L[2] = distances[k];
+				trilaterate3(fixedPoints[i], fixedPoints[j], fixedPoints[k], L, posi);
+				if ((posi[0] != 0) && (posi[1] != 0)) {
+					sum_x += posi[0];
+					sum_y += posi[1];
+					count++;
+				}
+			}
+		}
+	}
+
+	sum_x /= count;
+	sum_y /= count;
 
 	if (count > 0) {
 		coords_fifo[5] = coords_fifo[3];
@@ -397,6 +388,7 @@ void send_data() {
 						_main_state = DATA_MODE;
 						printf("SPP mode ON\r\n");
 						gecko_cmd_hardware_set_soft_timer(32768, SPP_TX_TIMER, 0); // start transmit timer
+						gecko_cmd_hardware_set_soft_timer(1310, AHRS_TIMER, 0);
 						SLEEP_SleepBlockBegin(sleepEM2); // Disable sleeping when SPP mode active
 						break;
 
@@ -410,6 +402,10 @@ void send_data() {
 				switch (evt->data.evt_hardware_soft_timer.handle) {
 					case SPP_TX_TIMER:
 						send_data();
+						break;
+
+					case AHRS_TIMER:
+						get_heading();
 						break;
 
 					case RESTART_TIMER:

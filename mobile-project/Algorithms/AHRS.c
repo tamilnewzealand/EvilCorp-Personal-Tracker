@@ -205,7 +205,6 @@ float invSqrt(float x) {
 
 void computeAngles()
 {
-	printf("Q0: %.6f, Q1: %.6f, Q2: %.6f, Q3: %.6f\r\n", q0, q1, q2, q3);
 	roll = atan2f(q0*q1 + q2*q3, 0.5f - q1*q1 - q2*q2);
 	pitch = asinf(-2.0f * (q1*q3 - q0*q2));
 	yaw = atan2f(q1*q2 + q0*q3, 0.5f - q2*q2 - q3*q3);
