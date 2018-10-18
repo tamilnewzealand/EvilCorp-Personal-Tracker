@@ -86,6 +86,8 @@ int16 orientation;
 uint8 signals[20] = { 0 };
 uint8 temp_minor = 0;
 uint8 location[18] = { 0 };
+uint16 x_data[3] = {0};
+uint16 y_data[3] = {0};
 
 /*
  * Resets Variables
@@ -220,7 +222,18 @@ void send_data() {
 	sum_y /= count;
 
 	if (count > 0) {
-		printf("Location is X:%d, Y:%d Over: %d, Heading: %d\r\n", (uint16)sum_x, (uint16)sum_y, count, orientation);
+		x_data[2] = x_data[1];
+		x_data[1] = x_data[0];
+		x_data[0] = (uint16)sum_x;
+
+		y_data[2] = y_data[1];
+		y_data[1] = y_data[0];
+		y_data[0] = (uint16)sum_y;
+
+		uint16 avg_x = (x_data[2] + x_data[1] + x_data[0]) / 3;
+		uint16 avg_y = (y_data[2] + y_data[1] + y_data[0]) / 3;
+
+		printf("Location is X:%d, Y:%d Over: %d, Heading: %d\r\n", avg_x, avg_y, count, orientation);
 
 		location[0] = (uint8)(sum_x >> 8);
 		location[1] = (uint8)sum_x;
