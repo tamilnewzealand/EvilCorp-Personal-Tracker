@@ -2,7 +2,7 @@
 
 #define height 175.0
 #define upper 180.0
-#define lower 160.0
+#define lower 170.0
 
 float pythagoras(float point_height, float measured_distance) {
 	if ((point_height <= upper) && (point_height >= lower)) {
@@ -85,6 +85,9 @@ uint8 trilaterate3(uint16 *P1, uint16 *P2, uint16 *P3, float *L, uint16 *posi)
     posi[0] = (uint16)(x1 + X * Xx + Y * Yx - Z * Zx);
     posi[1] = (uint16)(y1 + X * Xy + Y * Yy - Z * Zy);
     posi[2] = (uint16)(z1 + X * Xz + Y * Yz - Z * Zz);
+
+    if (posi[0] > 1060 || posi[1] > 1910) return 0;
+    if (posi[0] <= 0 || posi[1] <= 0) return 0;
 
     return 1;
 }

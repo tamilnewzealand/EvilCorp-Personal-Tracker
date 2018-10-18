@@ -83,10 +83,9 @@ int8_t temp_data_1;
 int8_t temp_data_2;
 int16 orientation;
 
-uint8 signals[20] = {0};
+uint8 signals[20] = { 0 };
 uint8 temp_minor = 0;
-uint8 location[18] = {0};
-uint32 coords_fifo[6] = {0};
+uint8 location[18] = { 0 };
 
 /*
  * Resets Variables
@@ -190,24 +189,25 @@ void send_data() {
 	k = 0;
 
 	uint16 fixedPoints[5][3] = { 0 };
-	for (i = 19; i > 14; i--) {
+	for (i = 19; i > 14; --i) {
 		j = signalsCopy[i][1];
 		fixedPoints[k][0] = referencePoints[j][0];
 		fixedPoints[k][1] = referencePoints[j][1];
 		fixedPoints[k][2] = referencePoints[j][2];
-		distances[k] = powf(10.0, (((int8)signalsCopy[i][0] + 54.2) / (-10 * 2)));
+		distances[k] = 2*powf(10.0, (((int8)signalsCopy[i][0] + 54.2) / (-10 * 2)));
 		k++;
 	}
+
 	for (i = 0; i < 5; i++) {
 		for (j = 0; j < 4; j++) {
 			for (k = 0; k < 3; k++) {
 				if ((fixedPoints[i][0] == fixedPoints[j][0]) && (fixedPoints[i][0] == fixedPoints[k][0])) continue;
 				if ((fixedPoints[i][1] == fixedPoints[j][1]) && (fixedPoints[i][1] == fixedPoints[k][1])) continue;
+				if ((i == j) || (i == k) || (j == k)) continue;
 				L[0] = distances[i];
 				L[1] = distances[j];
 				L[2] = distances[k];
-				trilaterate3(fixedPoints[i], fixedPoints[j], fixedPoints[k], L, posi);
-				if ((posi[0] != 0) && (posi[1] != 0)) {
+				if (trilaterate3(fixedPoints[i], fixedPoints[j], fixedPoints[k], L, posi)) {
 					sum_x += posi[0];
 					sum_y += posi[1];
 					count++;
@@ -220,16 +220,6 @@ void send_data() {
 	sum_y /= count;
 
 	if (count > 0) {
-		coords_fifo[5] = coords_fifo[3];
-		coords_fifo[4] = coords_fifo[2];
-		coords_fifo[3] = coords_fifo[1];
-		coords_fifo[2] = coords_fifo[0];
-		coords_fifo[0] = sum_x;
-		coords_fifo[1] = sum_y;
-
-		sum_x = (coords_fifo[0] + coords_fifo[2] + coords_fifo[4]) / 3;
-		sum_y = (coords_fifo[1] + coords_fifo[3] + coords_fifo[5]) / 3;
-
 		printf("Location is X:%d, Y:%d Over: %d, Heading: %d\r\n", (uint16)sum_x, (uint16)sum_y, count, orientation);
 
 		location[0] = (uint8)(sum_x >> 8);
