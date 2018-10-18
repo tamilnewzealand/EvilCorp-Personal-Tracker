@@ -157,7 +157,48 @@ void get_heading() {
 /*
  * Runs every second, sends data to base station
  */
-void send_data() {
+void send_data(uint16 sum_x, uint16 sum_y) {
+	x_data[2] = x_data[1];
+	x_data[1] = x_data[0];
+	x_data[0] = (uint16)sum_x;
+
+	y_data[2] = y_data[1];
+	y_data[1] = y_data[0];
+	y_data[0] = (uint16)sum_y;
+
+	uint16 avg_x = (x_data[2] + x_data[1] + x_data[0]) / 3;
+	uint16 avg_y = (y_data[2] + y_data[1] + y_data[0]) / 3;
+
+	printf("Location is X:%d, Y:%d, Heading: %d\r\n", avg_x, avg_y, orientation);
+
+	location[0] = (uint8)(sum_x >> 8);
+	location[1] = (uint8)sum_x;
+	location[2] = (uint8)(sum_y >> 8);
+	location[3] = (uint8)sum_y;
+
+	location[4] = (uint8)(sum_x >> 8);
+	location[5] = (uint8)sum_x;
+	location[6] = (uint8)(sum_y >> 8);
+	location[7] = (uint8)sum_y;
+
+	location[8] = (uint8)(sum_x >> 8);
+	location[9] = (uint8)sum_x;
+	location[10] = (uint8)(sum_y >> 8);
+	location[11] = (uint8)sum_y;
+
+	location[12] = (uint8)(orientation >> 8);
+	location[13] = (uint8)(orientation);
+
+	location[14] = (uint8)(orientation >> 8);
+	location[15] = (uint8)(orientation);
+
+	location[16] = (uint8)(orientation >> 8);
+	location[17] = (uint8)(orientation);
+
+	gecko_cmd_gatt_write_characteristic_value_without_response(_conn_handle, _char_handle, 18, location)->result;
+}
+
+void find_poisitions() {
 	int signalsCopy[20][2] = { 0 };
 	int signalsMoving[2] = { 0 };
 
@@ -197,6 +238,11 @@ void send_data() {
 		fixedPoints[k][1] = referencePoints[j][1];
 		fixedPoints[k][2] = referencePoints[j][2];
 		distances[k] = 2*powf(10.0, (((int8)signalsCopy[i][0] + 54.2) / (-10 * 2)));
+		if (distances[k] < 0.5f) {
+			printf("Fingerprinting\r\n");
+			send_data(fixedPoints[k][0], fixedPoints[k][1]);
+			return;
+		}  
 		k++;
 	}
 
@@ -221,46 +267,7 @@ void send_data() {
 	sum_x /= count;
 	sum_y /= count;
 
-	if (count > 0) {
-		x_data[2] = x_data[1];
-		x_data[1] = x_data[0];
-		x_data[0] = (uint16)sum_x;
-
-		y_data[2] = y_data[1];
-		y_data[1] = y_data[0];
-		y_data[0] = (uint16)sum_y;
-
-		uint16 avg_x = (x_data[2] + x_data[1] + x_data[0]) / 3;
-		uint16 avg_y = (y_data[2] + y_data[1] + y_data[0]) / 3;
-
-		printf("Location is X:%d, Y:%d Over: %d, Heading: %d\r\n", avg_x, avg_y, count, orientation);
-
-		location[0] = (uint8)(sum_x >> 8);
-		location[1] = (uint8)sum_x;
-		location[2] = (uint8)(sum_y >> 8);
-		location[3] = (uint8)sum_y;
-
-		location[4] = (uint8)(sum_x >> 8);
-		location[5] = (uint8)sum_x;
-		location[6] = (uint8)(sum_y >> 8);
-		location[7] = (uint8)sum_y;
-
-		location[8] = (uint8)(sum_x >> 8);
-		location[9] = (uint8)sum_x;
-		location[10] = (uint8)(sum_y >> 8);
-		location[11] = (uint8)sum_y;
-
-		location[12] = (uint8)(orientation >> 8);
-		location[13] = (uint8)(orientation);
-
-		location[14] = (uint8)(orientation >> 8);
-		location[15] = (uint8)(orientation);
-
-		location[16] = (uint8)(orientation >> 8);
-		location[17] = (uint8)(orientation);
-
-		gecko_cmd_gatt_write_characteristic_value_without_response(_conn_handle, _char_handle, 18, location)->result;
-	}
+	if (count > 0) send_data(sum_x, sum_y);
 }
 
 /*
@@ -404,7 +411,7 @@ void send_data() {
 			case gecko_evt_hardware_soft_timer_id:
 				switch (evt->data.evt_hardware_soft_timer.handle) {
 					case SPP_TX_TIMER:
-						send_data();
+						find_poisitions();
 						break;
 
 					case AHRS_TIMER:
