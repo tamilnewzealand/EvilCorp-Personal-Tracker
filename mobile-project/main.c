@@ -237,8 +237,8 @@ void find_poisitions() {
 		fixedPoints[k][0] = referencePoints[j][0];
 		fixedPoints[k][1] = referencePoints[j][1];
 		fixedPoints[k][2] = referencePoints[j][2];
-		distances[k] = powf(10.0, ((float)((int8)signalsCopy[i][0] + (uint8)referencePoints[j][3]) / (-10 * 2)));
-		if (distances[k] < 0.5f) {
+		distances[k] = 2* powf(10.0, ((float)((int8)signalsCopy[i][0] + 58.7) / (-10 * 2)));
+		if (distances[k] < 0.4f) {
 			printf("Fingerprinting\r\n");
 			send_data(fixedPoints[k][0], fixedPoints[k][1]);
 			return;
@@ -307,9 +307,11 @@ void find_poisitions() {
 				if (evt->data.evt_le_gap_scan_response.data.len >= 29) {
 					temp_minor = (uint8)evt->data.evt_le_gap_scan_response.data.data[28];
 					if (temp_minor < 15) {
-						signals[temp_minor - 5] = (uint8)evt->data.evt_le_gap_scan_response.rssi;
+						signals[temp_minor - 5] /= 2; 
+						signals[temp_minor - 5] += ((uint8)evt->data.evt_le_gap_scan_response.rssi / 2);
 					} else {
-						signals[temp_minor - 90] = (uint8)evt->data.evt_le_gap_scan_response.rssi;
+						signals[temp_minor - 90] /= 2;
+						signals[temp_minor - 90] += ((uint8)evt->data.evt_le_gap_scan_response.rssi / 2);
 					}
 
 				}
