@@ -425,7 +425,7 @@ void find_positions() {
 						_main_state = DATA_MODE;
 						printf("SPP mode ON\r\n");
 						gecko_cmd_hardware_set_soft_timer(32768, SPP_TX_TIMER, 0); // start transmit timer
-						gecko_cmd_hardware_set_soft_timer(1310, AHRS_TIMER, 0);
+						gecko_cmd_hardware_set_soft_timer(2184, AHRS_TIMER, 0);
 						SLEEP_SleepBlockBegin(sleepEM2); // Disable sleeping when SPP mode active
 						break;
 

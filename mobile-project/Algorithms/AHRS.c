@@ -1,6 +1,6 @@
 #include "AHRS.h"
 
-#define sampleFreq	25.0f		// sample frequency in Hz
+#define sampleFreq	15.0f		// sample frequency in Hz
 
 volatile float beta = 0.1f;								// 2 * proportional gain (Kp)
 volatile float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// quaternion of sensor frame relative to auxiliary frame
@@ -213,15 +213,15 @@ void computeAngles()
 
 float getRoll() {
         if (!computationDone) computeAngles();
-        return roll * 57.29578f * 1.8f;
+        return roll * 57.29578f;
 }
 
 float getPitch() {
     if (!computationDone) computeAngles();
-    return pitch * 57.29578f * 1.8f;
+    return pitch * 57.29578f;
 }
 
 float getYaw() {
     if (!computationDone) computeAngles();
-    return yaw * 57.29578f * 1.8f;
+    return yaw * 57.29578f;
 }
