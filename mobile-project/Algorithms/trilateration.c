@@ -1,8 +1,8 @@
 #include "trilateration.h"
 
 #define height 175.0
-#define upper 180.0
-#define lower 170.0
+#define upper height+5
+#define lower height-5
 
 float pythagoras(float point_height, float measured_distance) {
 	if ((point_height <= upper) && (point_height >= lower)) {
