@@ -4,6 +4,7 @@
 #define upper height+5
 #define lower height-5
 
+// Function to convert 3D distance to 2D distance
 float pythagoras(float point_height, float measured_distance) {
 	if ((point_height <= upper) && (point_height >= lower)) {
 		return measured_distance;
@@ -16,8 +17,10 @@ float pythagoras(float point_height, float measured_distance) {
 	return 0;
 }
 
+// Trilaterate in 2D
 uint8 trilaterate3(uint16 *P1, uint16 *P2, uint16 *P3, float *L, uint16 *posi)
-{
+{	
+	// Input variables
     float x1 = (float)P1[0];
     float y1 = (float)P1[1];
     float z1 = (float)P1[2];
@@ -34,15 +37,17 @@ uint8 trilaterate3(uint16 *P1, uint16 *P2, uint16 *P3, float *L, uint16 *posi)
     float tL2 = L[1]*100;
     float tL3 = L[2]*100;
 
+	// Convert distances to 2D
     float L1 = pythagoras(z1, tL1);
     float L2 = pythagoras(z2, tL2);
     float L3 = pythagoras(z3, tL3);
 
-    z1 = 175;
-    z2 = 175;
-    z3 = 175;
+	// Heights are all default
+    z1 = height;
+    z2 = height;
+    z3 = height;
 
-    //calculate coords in plane of stations
+    // Calculate coords in plane of stations
     float LB1 = sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1) + (z2 - z1) * (z2 - z1));
     float LB2 = sqrt((x3 - x2) * (x3 - x2) + (y3 - y2) * (y3 - y2) + (z3 - z2) * (z3 - z2));
     float LB3 = sqrt((x1 - x3) * (x1 - x3) + (y1 - y3) * (y1 - y3) + (z1 - z3) * (z1 - z3));
@@ -59,8 +64,8 @@ uint8 trilaterate3(uint16 *P1, uint16 *P2, uint16 *P3, float *L, uint16 *posi)
     if (C1*C1 - Y*Y < 0) return 0;
     float Z = sqrt(C1 * C1 - Y * Y);
 
-    //Now transform X,Y,Z to x,y,z
-    //Find the unit vectors in X,Y,Z
+    // Now transform X,Y,Z to x,y,z
+    // Find the unit vectors in X,Y,Z
     float Xx = (x2-x1);
     float Xy = (y2-y1);
     float Xz = (z2-z1);
@@ -86,12 +91,14 @@ uint8 trilaterate3(uint16 *P1, uint16 *P2, uint16 *P3, float *L, uint16 *posi)
     posi[1] = (uint16)(y1 + X * Xy + Y * Yy - Z * Zy);
     posi[2] = (uint16)(z1 + X * Xz + Y * Yz - Z * Zz);
 
+	// Check boundaries
     if (posi[0] > 1060 || posi[1] > 1910) return 0;
     if (posi[0] <= 0 || posi[1] <= 0) return 0;
 
     return 1;
 }
 
+// Lateration in 3D, as from Localisation slides presented in class
 uint8 trilaterate4(uint16 *P1, uint16 *P2, uint16 *P3, uint16 *P4, float *L, uint16 *posi) {
 	double x1 = (double)P1[0];
 	double y1 = (double)P1[1];
@@ -171,6 +178,7 @@ uint8 trilaterate4(uint16 *P1, uint16 *P2, uint16 *P3, uint16 *P4, float *L, uin
 	return 1;
 }
 
+// Lateration in 3D, attempted using Cramer's rule to solve the simulataneous equations
 uint8 trilaterate4_2(uint16 *P1, uint16 *P2, uint16 *P3, uint16 *P4, float *L, uint16 *posi) {
 	double x1 = (double)P1[0];
 	double y1 = (double)P1[1];
@@ -234,6 +242,7 @@ uint8 trilaterate4_2(uint16 *P1, uint16 *P2, uint16 *P3, uint16 *P4, float *L, u
 	return 1;
 }
 
+// Lateration in 3D, attempted using a variant of the localisation method presented in slides
 uint8 trilaterate4_3(uint16 *P1, uint16 *P2, uint16 *P3, uint16 *P4, float *L, uint16 *posi) {
 	double x1 = (double)P1[0];
 	double y1 = (double)P1[1];

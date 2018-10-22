@@ -59,8 +59,10 @@ const uint8 serviceUUID[16] = {0x59, 0x65, 0x1e, 0x63, 0x76, 0x31, 0xd2, 0xaa, 0
 // SPP data UUID: dde0c840-7bc7-4a70-9c69-3295c2535cd9
 const uint8 charUUID[16] = {0xd9, 0x5c, 0x53, 0xc2, 0x95, 0x32, 0x69, 0x9c, 0x70, 0x4a, 0xc7, 0x7b, 0x40, 0xc8, 0xe0, 0xdd};
 
+// Beacon Locations {x, y, z, RSSI at 1m}
 uint16 referencePoints[20][4] = {{750, 1796, 109, 59}, {1057, 826, 163, 55}, {0, 1568, 172, 53}, {0, 935, 172, 72}, {589, 285, 134, 52}, {1057, 1460, 174, 72}, {58, 0, 160, 62}, {602, 1358, 265, 54}, {602, 775, 265, 49}, {73, 1900, 244, 43}, {0, 1235, 172, 54}, {602, 1075, 265, 58}, {662, 645, 265, 60}, {1057, 976, 163, 72}, {328, 275, 200, 59}, {0, 535, 172, 79}, {770, 1596, 190, 59}, {972, 1156, 265, 49}, {1057, 485, 200, 57}, {530, 1900, 244, 56}};
 
+// Timers
 #define RESTART_TIMER 1
 #define SPP_TX_TIMER  2
 #define AHRS_TIMER    3
@@ -89,6 +91,9 @@ uint8 location[18] = { 0 };
 uint16 x_data[3] = {0};
 uint16 y_data[3] = {0};
 
+/***************************************************************************************************
+ Functions
+ **************************************************************************************************/
 /*
  * Resets Variables
  */
@@ -134,6 +139,9 @@ static int process_scan_response(struct gecko_msg_le_gap_scan_response_evt_t *re
     return(address_match_found);
 }
 
+/*
+ * Uses the AHRS algorithm to get heading and update the global variable
+ */
 void get_heading() {
 	if (readAccel(&accel_data)) {
 		if (readGryo(&gyro_data)) {
@@ -155,9 +163,10 @@ void get_heading() {
 }
 
 /*
- * Runs every second, sends data to base station
+ * Sends location and orientation data to base station
  */
 void send_data(uint16 sum_x, uint16 sum_y) {
+	// Averages the X and Y coordinates with the two most recent values in a FIFO buffer
 	x_data[2] = x_data[1];
 	x_data[1] = x_data[0];
 	x_data[0] = (uint16)sum_x;
@@ -171,6 +180,9 @@ void send_data(uint16 sum_x, uint16 sum_y) {
 
 	printf("Location is X:%d, Y:%d, Heading: %d\r\n", avg_x, avg_y, orientation);
 
+	// Writes to location array
+	// Three copies of each data value is sent. At the base station these copies are checked.
+	// If any of the three copies do not match the other two, then the data is discarded as there has been an error in communication
 	location[0] = (uint8)(sum_x >> 8);
 	location[1] = (uint8)sum_x;
 	location[2] = (uint8)(sum_y >> 8);
@@ -195,13 +207,18 @@ void send_data(uint16 sum_x, uint16 sum_y) {
 	location[16] = (uint8)(orientation >> 8);
 	location[17] = (uint8)(orientation);
 
+	// Sends location array
 	gecko_cmd_gatt_write_characteristic_value_without_response(_conn_handle, _char_handle, 18, location)->result;
 }
 
-void find_poisitions() {
+/*
+ * Runs every second, finds position from RSSI values, and calls  send_data if the results are good
+ */
+void find_positions() {
 	int signalsCopy[20][2] = { 0 };
 	int signalsMoving[2] = { 0 };
 
+	// Order and bubble sort beacons by RSSI
 	uint8 i;
 	uint8 j;
 	uint8 k;
@@ -223,6 +240,7 @@ void find_poisitions() {
 		}
 	}
 
+	// Pick the top five beacons and calculate distances for them
 	float distances[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
 	float L[3] = {0.0, 0.0, 0.0};
 	uint16 posi[3] = { 0 };
@@ -238,6 +256,7 @@ void find_poisitions() {
 		fixedPoints[k][1] = referencePoints[j][1];
 		fixedPoints[k][2] = referencePoints[j][2];
 		distances[k] = 2* powf(10.0, ((float)((int8)signalsCopy[i][0] + 58.7) / (-10 * 2)));
+		// Fingerprinting, if the mobile device is within 40cm of a beacon then set the location of the mobile device to be the beacon
 		if (distances[k] < 0.4f) {
 			printf("Fingerprinting\r\n");
 			send_data(fixedPoints[k][0], fixedPoints[k][1]);
@@ -246,6 +265,7 @@ void find_poisitions() {
 		k++;
 	}
 
+	// Take every non-colinear combination of three beacons of the top five beacons
 	for (i = 0; i < 5; i++) {
 		for (j = 0; j < 4; j++) {
 			for (k = 0; k < 3; k++) {
@@ -255,7 +275,7 @@ void find_poisitions() {
 				L[0] = distances[i];
 				L[1] = distances[j];
 				L[2] = distances[k];
-				if (trilaterate3(fixedPoints[i], fixedPoints[j], fixedPoints[k], L, posi)) {
+				if (trilaterate3(fixedPoints[i], fixedPoints[j], fixedPoints[k], L, posi)) { // Run the trilateration algorithm, sum results if 0 is not returned
 					sum_x += posi[0];
 					sum_y += posi[1];
 					count++;
@@ -264,9 +284,11 @@ void find_poisitions() {
 		}
 	}
 
+	// Divide by the number of coordinates calculated to obtain an avergage for X and Y coordinates
 	sum_x /= count;
 	sum_y /= count;
 
+	// Send the data if we have at least one coordinate calculated
 	if (count > 0) send_data(sum_x, sum_y);
 }
 
@@ -306,10 +328,13 @@ void find_poisitions() {
 			case gecko_evt_le_gap_scan_response_id:
 				if (evt->data.evt_le_gap_scan_response.data.len >= 29) {
 					temp_minor = (uint8)evt->data.evt_le_gap_scan_response.data.data[28];
+					// Write RSSI to the correct element of the beacon array
 					if (temp_minor < 15) {
+						// Average of the previous RSSI value and the new RSSI value
 						signals[temp_minor - 5] /= 2; 
 						signals[temp_minor - 5] += ((uint8)evt->data.evt_le_gap_scan_response.rssi / 2);
 					} else {
+						// Average of the previous RSSI value and the new RSSI value
 						signals[temp_minor - 90] /= 2;
 						signals[temp_minor - 90] += ((uint8)evt->data.evt_le_gap_scan_response.rssi / 2);
 					}
@@ -412,14 +437,17 @@ void find_poisitions() {
 			// Transmit Timer Event
 			case gecko_evt_hardware_soft_timer_id:
 				switch (evt->data.evt_hardware_soft_timer.handle) {
+					// Every second find position and send data
 					case SPP_TX_TIMER:
-						find_poisitions();
+						find_positions();
 						break;
 
+					// Every 40 ms find heading
 					case AHRS_TIMER:
 						get_heading();
 						break;
 
+					// If reboot required
 					case RESTART_TIMER:
 						gecko_cmd_le_gap_discover(le_gap_discover_generic);
 						break;
